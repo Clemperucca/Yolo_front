@@ -72,10 +72,6 @@ function sendMessage(dataChannel, message) {
     }
 };
 function displayOffer(senderName) {
-    let logo = document.getElementById("Yolo_logo");
-    let texte = document.getElementById("description_logo");
-    logo.style.display = "none";
-    texte.style.display = "none";
     let divModal = document.getElementById("modal");
     divModal.innerHTML += `<div id="offer" class="modal">
         <div class="modal-dialog">
