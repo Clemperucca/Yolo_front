@@ -2,7 +2,17 @@ const express = require('express')
 const app = express();
 
 const http = require('http').Server(app);
-const io = require('socket.io')(http);
+const https = require('https');
+const fs = require('fs')
+const path = require('path')
+const sslServer = https.createServer({
+  key: fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')),
+  cert: fs.readFileSync(path.join(__dirname, 'cert', 'cert.pem')),
+},
+  app
+);
+//const io = require('socket.io')(http);
+const io = require('socket.io')(sslServer);
 const port = process.env.PORT || 9000;
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/chat.html');
@@ -91,6 +101,7 @@ io.on('connection', (socket) => {
       case "answer":
 
         //Get the recipient socketId
+        console.log(msg.name);
         recipientSocketId = lookForUserSocketId(msg.name);
         //Get the sender name
         senderName = lookForUserName(socket.id);
@@ -182,3 +193,5 @@ io.on('connection', (socket) => {
 http.listen(port, () => {
   console.log(`Socket.IO server running at http://localhost:${port}/`);
 });
+
+sslServer.listen(3443, () => console.log('Secure server 🚀🔑 on port 3443'));
