@@ -414,17 +414,10 @@ document.addEventListener('click', function (e) {
         console.log(e.target);
         document.getElementById("offer").style.display = "none";
         //callee accepted the offer and sending back his answer to the caller 
-<<<<<<< HEAD
         socket.emit("request", { type: "answer", name: changeUnderscoreIntoWhiteSpaces(e.target.id) });
         console.log(changeUnderscoreIntoWhiteSpaces(e.target.id));
         caller = changeUnderscoreIntoWhiteSpaces(e.target.id);
         document.getElementById("logo_title").style.display = "none";
-=======
-        socket.emit("request", { type: "answer", name: changeUnderscoreIntoWhiteSpaces(e.target.id) });
-        console.log(changeUnderscoreIntoWhiteSpaces(e.target.id));
-        caller = changeUnderscoreIntoWhiteSpaces(e.target.id);
-        document.getElementById("logo_title").style.display = "none";
->>>>>>> 4d803f7d16e1991f33aed99704d9b3696f018bf8
 
     }
 
