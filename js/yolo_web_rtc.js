@@ -1,5 +1,5 @@
 var socket = io();
-var userName = "patoche" + Math.random();
+var userName = "patoche " + Math.random();
 
 socket.emit("request", msg = { type: "login", name: userName });
 
@@ -22,14 +22,22 @@ var caller;
 var pcCaller;
 var pcCallee;
 var dataChannel;
-
+var dataChannelList = new Array();
 
 //envoie msg 
 
 let SendButton = document.getElementById("button");
 SendButton.addEventListener("click", e => {
     let divMessage = document.getElementById("messageInput");
-    sendMessage(dataChannel, divMessage.value);
+    displayMessageToSend(dataChannel, divMessage.value);
+    if (dataChannelList.length > 0) {
+        for (let i = 0; i < dataChannelList.length; i++)
+            sendMessage(dataChannelList[i], divMessage.value, userName);
+    }
+    else {
+        sendMessage(dataChannel, divMessage.value, userName);
+    }
+
     divMessage.value = "";
 });
 
@@ -39,7 +47,9 @@ SendButton.addEventListener("click", e => {
 
 function messageReceive(dataChannel) {
     dataChannel.addEventListener("message", event => {
+        console.log("Message send by : " + event.currentTarget.label)
         console.log("Message received : " + event.data);
+        console.log(event);
         let divMsg = document.getElementById("conversation");
         divMsg.innerHTML += `
         <div class="row message-body">
@@ -52,11 +62,17 @@ function messageReceive(dataChannel) {
             </div>
         </div>
         `;
+        if (dataChannelList.length > 0) {
+            for (let i = 0; i < dataChannelList.length; i++) {
+                if (dataChannelList[i] != dataChannel) {
+                    dataChannelList[i].send(event.data);
+                }
+            }
+        }
     });
 }
-function sendMessage(dataChannel, message) {
+function displayMessageToSend(dataChannel, message) {
     if (dataChannel.readyState == "open") {
-        dataChannel.send(message);
         let divMsg = document.getElementById("conversation");
         divMsg.innerHTML += `
         <div class="row message-body">
@@ -70,22 +86,32 @@ function sendMessage(dataChannel, message) {
         </div>
         `;
     }
+}
+function sendMessage(dataChannel, message, senderName) {
+    if (dataChannel.readyState == "open") {
+        dataChannel.send(senderName + " : " + message);
+    }
 };
 function displayOffer(senderName) {
-    let logo = document.getElementById("Yolo_logo");
-    let texte = document.getElementById("description_logo");
-    logo.style.display = "none";
-    texte.style.display = "none";
+    console.log("Sender name :" + senderName);
     let divModal = document.getElementById("modal");
     divModal.innerHTML += `<div id="offer" class="modal">
         <div class="modal-dialog">
           <div class="modal-content">
             <header class="modalContainer"> Offer By ${senderName}</header>
-            <button class=acceptButton id=${senderName}>Accept offer send by:${senderName}</button>          
+            <button class="acceptButton" id=${changeWhiteSpacesIntoUnderscore(senderName)}>Accept offer send by:${senderName}</button>     
           </div >
         `;
 }
 
+function changeWhiteSpacesIntoUnderscore(word) {
+    word = word.replace(/\s+/g, '_');
+    return word;
+}
+function changeUnderscoreIntoWhiteSpaces(word) {
+    word = word.replace('_', ' ');
+    return word;
+}
 /*
     const stream = navigator.mediaDevices.getUserMedia({ audio: true });
  
@@ -154,16 +180,20 @@ socket.on("answer", async receiverName => {
 
     //Creating the caller peer connection and his sdp
     if (pcCaller == undefined) {
-        pcCaller = new RTCPeerConnection();
-        dataChannel = pcCaller.createDataChannel("dataChannel");
+        //pcCaller = new RTCPeerConnection();
+
         //console.log(dataChannel);
     }
-
+    pcCaller = new RTCPeerConnection();
+    dataChannel = pcCaller.createDataChannel(receiverName);
+    dataChannelList.push(dataChannel);
 
     pcCaller.addEventListener('connectionstatechange', event => {
         console.log("connection ?")
         if (pcCaller.connectionState === 'connected') {
             // Peers connected!
+            //for (let i = 0; i < dataChannelList.length; i++)
+            //messageReceive(dataChannelList[i]);
             messageReceive(dataChannel);
             console.log("GGWP peers connected!");
         }
@@ -208,7 +238,7 @@ socket.on("calleeSdp", async calleeSdp => {
     dataChannel.addEventListener("open", ev => {
         const readyState = dataChannel.readyState;
         console.log("Send channel state is: " + readyState);
-        sendMessage(dataChannel, "coucou bro 2");
+        sendMessage(dataChannel, "coucou bro 2", userName);
     });
     dataChannel.addEventListener("error", ev => {
         console.log(ev);
@@ -261,7 +291,7 @@ socket.on("pcOffer", async (callerSdp, dc) => {
         console.log("datachannel ? : ");
         console.log(dataChannel);
 
-        sendMessage(dataChannel, "coucou bro");
+        sendMessage(dataChannel, "coucou bro", userName);
         messageReceive(dataChannel);
 
     }, false);
@@ -270,13 +300,12 @@ socket.on("pcOffer", async (callerSdp, dc) => {
     await pcCallee.setRemoteDescription(callerSdp);
     console.log("caller description set:");
     console.log(callerSdp);
-
     pcCallee.addEventListener('icecandidate', event => {
 
         if (event.candidate != null) {
             console.log("ice candidate found");
             console.log(event.candidate);
-            socket.emit("request", { type: 'iceCandidateToCaller', name: callee, candidate: event.candidate });
+            socket.emit("request", { type: 'iceCandidateToCaller', name: caller, candidate: event.candidate });
         }
     });
     //Creating the callee sdp answer 
@@ -325,9 +354,10 @@ document.addEventListener('click', function (e) {
         console.log(e.target);
         let divModal = document.getElementById("offer").style.display = "none";
         //callee accepted the offer and sending back his answer to the caller 
-        socket.emit("request", { type: "answer", name: e.target.id });
-        console.log(e.target.id);
-        caller = e.target.id;
+        socket.emit("request", { type: "answer", name: changeUnderscoreIntoWhiteSpaces(e.target.id) });
+        console.log(changeUnderscoreIntoWhiteSpaces(e.target.id));
+        caller = changeUnderscoreIntoWhiteSpaces(e.target.id);
+
     }
 
 });
