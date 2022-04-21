@@ -42,7 +42,7 @@ function messageReceive(dataChannel) {
         console.log("Message received : " + event.data);
         let divMsg = document.getElementById("conversation");
         divMsg.innerHTML += `
-        <div class="row message-body">
+        <div class="row message-body" id="message">
             <div class="col-sm-12 message-main-receiver">
                 <div class="receiver">
                     <div class="message-text">
@@ -59,7 +59,7 @@ function sendMessage(dataChannel, message) {
         dataChannel.send(message);
         let divMsg = document.getElementById("conversation");
         divMsg.innerHTML += `
-        <div class="row message-body">
+        <div class="row message-body" id="message">
             <div class="col-sm-12 message-main-sender">
                 <div class="sender">
                     <div class="message-text">
@@ -80,6 +80,26 @@ function displayOffer(senderName) {
             <button class=acceptButton id=${senderName}>Accept offer send by:${senderName}</button>          
           </div >
         `;
+
+    // a ajouter coter caller aussi quand channel crée 
+    let divHeader = document.getElementById("friendName");
+    divHeader.innerHTML += `<div class="col-sm-8 col-xs-7 heading-name">
+            <a class="heading-name-meta">${senderName}
+            </a>
+            <spa>Online</span>
+          </div>
+          <button class="btn btn-secondary pull-right"id="button_quit">Quitter la conversation</button>
+          `;
+}
+
+function displayWaiting() {
+    let divModal = document.getElementById("modal");
+    divModal.innerHTML += `<div id="offer" class="modal">
+     <div class="modal-dialog">
+        <div class="modal-content">
+        <header class="modalContainer"> Waiting for answer...</header>          
+        </div >
+    `;
 }
 
 /*
@@ -107,7 +127,7 @@ function addUsers(user) {
     //Add to the list of user on the UI 
     let contactList = document.getElementById("friends");
     contactList.innerHTML += `
-        <div class="row sideBar-body">
+        <div class="row sideBar-body" id="${user}">
             <div class="col-sm-3 col-xs-3 sideBar-avatar">
                 <div class="avatar-icon">
                     <img src="img/man-2-512.png">
@@ -124,12 +144,27 @@ function addUsers(user) {
             </div>
         </div>
         `;
-    console.log(contactList);
+
 
 };
+function deleteUser(user) {
+    for (let i = 0; i < userList.length; i++) {
 
+        if (userList[i] == user) {
+
+            userList.splice(i, 1);
+        }
+    }
+    let userToDelete = document.getElementById(user);
+    userToDelete.parentNode.removeChild(userToDelete);
+};
 socket.on("newUser", user => {
     addUsers(user);
+    console.log("new user :" + user);
+});
+//handle user leaving 
+socket.on("userLeave", user => {
+    deleteUser(user);
     console.log(user);
 });
 
@@ -147,12 +182,19 @@ socket.on("answer", async receiverName => {
     //côté caller
     callee = receiverName;
     console.log("Connexion accepté de :" + receiverName);
+    let divModal = document.getElementById("offer").style.display = "none";
+
 
     //Creating the caller peer connection and his sdp
     if (pcCaller == undefined) {
         pcCaller = new RTCPeerConnection();
         dataChannel = pcCaller.createDataChannel("dataChannel");
         //console.log(dataChannel);
+        dataChannel.addEventListener("close", ev => {
+            let divMsg = document.getElementById("conversation");
+            let msg = document.getElementById("message");
+            divMsg.removeChild(msg);
+        });
     }
 
 
@@ -241,7 +283,7 @@ socket.on('calleeIceCandidate', async calleeIceCandidate => {
 socket.on("offer", senderName => {
     console.log("Demande de connexion de:" + senderName);
     displayOffer(senderName);
-    //cells.innerHTML += `<button class=acceptButton id = ${senderName}> Accept offer send by:${senderName}</button >`;
+
 });
 
 
@@ -302,13 +344,12 @@ socket.on('callerIceCandidate', async callerIceCandidate => {
 });
 
 
-
-
 /////////////////////////////////////////////////////////////////////////////////////////
 
 socket.on("disconnection", senderName2 => {
 
 });
+
 
 const acceptButton = document.getElementsByClassName("Accept");
 document.addEventListener('click', function (e) {
@@ -316,16 +357,42 @@ document.addEventListener('click', function (e) {
         //Caller sending his offer to the callee 
         socket.emit("request", { type: "offer", name: e.target.id });
         console.log(e.target.id);
+        //display pop up
+        displayWaiting();
+        let divHeader = document.getElementById("friendName");
+        divHeader.innerHTML += `<div class="col-sm-8 col-xs-7 heading-name">
+            <a class="heading-name-meta">${e.target.id}
+            </a>
+            <span>Online</span>
+          </div>
+          <button class="btn btn-secondary pull-right" id="button_quit">Quitter la conversation</button>
+          `;
+        document.getElementById("logo_title").style.display = "none";
+        //handle click on button quit 
+        let quitButton = document.getElementById("button_quit");
+        quitButton.addEventListener("click", e => {
+            dataChannel.close();
+            let divMsg = document.getElementById("conversation");
+            let msg = document.getElementById("message");
+            divMsg.removeChild(msg);
+        });
     }
     if (e.target && e.target.className == 'acceptButton') {
         console.log(e.target);
-        let divModal = document.getElementById("offer").style.display = "none";
+        document.getElementById("offer").style.display = "none";
         //callee accepted the offer and sending back his answer to the caller 
         socket.emit("request", { type: "answer", name: e.target.id });
         console.log(e.target.id);
         caller = e.target.id;
+        document.getElementById("logo_title").style.display = "none";
+
     }
 
+});
+
+//closing the app
+window.addEventListener('beforeunload', e => {
+    socket.emit("disconnect");
 });
 
 

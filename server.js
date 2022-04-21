@@ -72,6 +72,7 @@ io.on('connection', (socket) => {
         //Send a msg to all user when a new user is connected
 
         socket.broadcast.emit("newUser", userName);
+
         break;
       case "offer":
 
@@ -157,14 +158,15 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on("close", function () {
+  socket.on("disconnect", function () {
     let index = 0;
-    if (socket.id != users[index].socketId) {
-      index++;
-    }
-    else {
-      io.emit("userLeave", users[index].name);
-      delete users[index];
+    for (index = 0; index < users.length; index++) {
+      if (socket.id == users[index].socketId) {
+        console.log("user " + users[index].userName + " leave");
+        socket.broadcast.emit("userLeave", users[index].userName);
+        users.splice(index, 1);
+        console.log(users);
+      }
     }
   });
 
