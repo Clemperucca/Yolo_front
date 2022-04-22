@@ -50,9 +50,9 @@ function messageReceive(dataChannel) {
         console.log("Message send by : " + event.currentTarget.label)
         console.log("Message received : " + event.data);
         console.log(event);
-        let divMsg = document.getElementById("conversation");
+        let divMsg = document.getElementById("messages");
         divMsg.innerHTML += `
-        <div class="row message-body" id="message">
+        <div class="row message-body">
             <div class="col-sm-12 message-main-receiver">
                 <div class="receiver">
                     <div class="message-text">
@@ -73,9 +73,9 @@ function messageReceive(dataChannel) {
 }
 function displayMessageToSend(dataChannel, message) {
     if (dataChannel.readyState == "open") {
-        let divMsg = document.getElementById("conversation");
+        let divMsg = document.getElementById("messages");
         divMsg.innerHTML += `
-        <div class="row message-body" id="message">
+        <div class="row message-body">
             <div class="col-sm-12 message-main-sender">
                 <div class="sender">
                     <div class="message-text">
@@ -221,9 +221,12 @@ socket.on("answer", async receiverName => {
     dataChannel = pcCaller.createDataChannel(receiverName);
     dataChannelList.push(dataChannel);
     dataChannel.addEventListener("close", ev => {
-        let divMsg = document.getElementById("conversation");
-        let msg = document.getElementById("message");
-        divMsg.removeChild(msg);
+        let divMsg = document.getElementById("messages");
+        divMsg.parentNode.removeChild(divMsg);
+        document.getElementById("button_quit").style.display = "none";
+        let divConvo = document.getElementById("conversation");
+        divConvo.innerHTML += `<div id="messages"></div>`;
+
     });
     pcCaller.addEventListener('connectionstatechange', event => {
         console.log("connection ?")
@@ -400,9 +403,14 @@ document.addEventListener('click', function (e) {
         let quitButton = document.getElementById("button_quit");
         quitButton.addEventListener("click", e => {
             dataChannel.close();
-            let divMsg = document.getElementById("conversation");
-            let msg = document.getElementById("message");
-            divMsg.removeChild(msg);
+            //console.log(datachannelState )
+            let divMsg = document.getElementById("messages");
+            divMsg.parentNode.removeChild(divMsg);
+            document.getElementById("button_quit").style.display = "none";
+            let divConvo = document.getElementById("conversation");
+            divConvo.innerHTML += `<div id="messages"></div>`;
+
+
         });
     }
     if (e.target && e.target.className == 'acceptButton') {
