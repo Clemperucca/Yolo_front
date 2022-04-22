@@ -4,7 +4,7 @@ var userName = "patoche " + Math.random();
 socket.emit("request", msg = { type: "login", name: userName });
 
 
-
+//TO DO  disable button make an offer durong a convo by using element.disabled 
 /*
 var firstName = ...
 var lastName = ...
@@ -40,9 +40,6 @@ SendButton.addEventListener("click", e => {
 
     divMessage.value = "";
 });
-
-
-
 
 
 function messageReceive(dataChannel) {
@@ -88,7 +85,7 @@ function displayMessageToSend(dataChannel, message) {
     }
 }
 function sendMessage(dataChannel, message, senderName) {
-    if (dataChannel.readyState == "open") {
+    if (dataChannel.readyState === "open") {
         dataChannel.send(senderName + " : " + message);
     }
 };
@@ -212,7 +209,7 @@ socket.on("answer", async receiverName => {
     //côté caller
     callee = receiverName;
     console.log("Connexion accepté de :" + receiverName);
-    let divModal = document.getElementById("offer").style.display = "none";
+    document.getElementById("offer").style.display = "none";
 
 
     //Creating the caller peer connection and his sdp
@@ -220,14 +217,8 @@ socket.on("answer", async receiverName => {
     pcCaller = new RTCPeerConnection();
     dataChannel = pcCaller.createDataChannel(receiverName);
     dataChannelList.push(dataChannel);
-    dataChannel.addEventListener("close", ev => {
-        let divMsg = document.getElementById("messages");
-        divMsg.parentNode.removeChild(divMsg);
-        document.getElementById("button_quit").style.display = "none";
-        let divConvo = document.getElementById("conversation");
-        divConvo.innerHTML += `<div id="messages"></div>`;
 
-    });
+
     pcCaller.addEventListener('connectionstatechange', event => {
         console.log("connection ?")
         if (pcCaller.connectionState === 'connected') {
@@ -238,6 +229,20 @@ socket.on("answer", async receiverName => {
             console.log("GGWP peers connected!");
         }
     });
+
+
+    dataChannel.addEventListener("closing", ev => {
+
+        console.log("state of dc 2 : " + dataChannel.readyState);
+        let divMsg = document.getElementById("messages");
+        divMsg.parentNode.removeChild(divMsg);
+        document.getElementById("button_quit").style.display = "none";
+        let divConvo = document.getElementById("conversation");
+        divConvo.innerHTML += `<div id="messages"></div>`;
+
+    });
+
+
 
     var CallerSdp = await pcCaller.createOffer({ iceRestart: true });
     //Sending the caller sdp to the callee  
@@ -403,12 +408,17 @@ document.addEventListener('click', function (e) {
         let quitButton = document.getElementById("button_quit");
         quitButton.addEventListener("click", e => {
             dataChannel.close();
-            //console.log(datachannelState )
+            let state = dataChannel.readyState;
+            console.log("state of the dc : " + state);
+
+            //remove messages and hide the quit button 
             let divMsg = document.getElementById("messages");
             divMsg.parentNode.removeChild(divMsg);
             document.getElementById("button_quit").style.display = "none";
             let divConvo = document.getElementById("conversation");
             divConvo.innerHTML += `<div id="messages"></div>`;
+
+
 
 
         });
@@ -421,6 +431,8 @@ document.addEventListener('click', function (e) {
         console.log(changeUnderscoreIntoWhiteSpaces(e.target.id));
         caller = changeUnderscoreIntoWhiteSpaces(e.target.id);
         document.getElementById("logo_title").style.display = "none";
+
+
 
     }
 
