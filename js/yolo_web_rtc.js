@@ -216,20 +216,15 @@ socket.on("answer", async receiverName => {
 
 
     //Creating the caller peer connection and his sdp
-    if (pcCaller == undefined) {
-        //pcCaller = new RTCPeerConnection();
 
-        //console.log(dataChannel);
-        dataChannel.addEventListener("close", ev => {
-            let divMsg = document.getElementById("conversation");
-            let msg = document.getElementById("message");
-            divMsg.removeChild(msg);
-        });
-    }
     pcCaller = new RTCPeerConnection();
     dataChannel = pcCaller.createDataChannel(receiverName);
     dataChannelList.push(dataChannel);
-
+    dataChannel.addEventListener("close", ev => {
+        let divMsg = document.getElementById("conversation");
+        let msg = document.getElementById("message");
+        divMsg.removeChild(msg);
+    });
     pcCaller.addEventListener('connectionstatechange', event => {
         console.log("connection ?")
         if (pcCaller.connectionState === 'connected') {
