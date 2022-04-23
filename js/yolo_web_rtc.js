@@ -41,6 +41,15 @@ SendButton.addEventListener("click", e => {
     divMessage.value = "";
 });
 
+function deleteMessages() {
+    //remove messages and hide the quit button 
+    let divMsg = document.getElementById("messages");
+    divMsg.parentNode.removeChild(divMsg);
+    document.getElementById("button_quit").style.display = "none";
+    let divConvo = document.getElementById("conversation");
+    divConvo.innerHTML += `<div id="messages"></div>`;
+    document.getElementById("logo_title").style.display = "initial";
+}
 
 function messageReceive(dataChannel) {
     dataChannel.addEventListener("message", event => {
@@ -231,16 +240,7 @@ socket.on("answer", async receiverName => {
     });
 
 
-    dataChannel.addEventListener("closing", ev => {
 
-        console.log("state of dc 2 : " + dataChannel.readyState);
-        let divMsg = document.getElementById("messages");
-        divMsg.parentNode.removeChild(divMsg);
-        document.getElementById("button_quit").style.display = "none";
-        let divConvo = document.getElementById("conversation");
-        divConvo.innerHTML += `<div id="messages"></div>`;
-
-    });
 
 
 
@@ -339,6 +339,11 @@ socket.on("pcOffer", async (callerSdp, dc) => {
         sendMessage(dataChannel, "coucou bro", userName);
         messageReceive(dataChannel);
 
+        dataChannel.addEventListener("close", ev => {
+            console.log(dataChannel.readyState);
+            deleteMessages();
+        });
+
     }, false);
     //messageReceive(dataChannel);
     //Setting the caller sdp description
@@ -410,15 +415,7 @@ document.addEventListener('click', function (e) {
             dataChannel.close();
             let state = dataChannel.readyState;
             console.log("state of the dc : " + state);
-
-            //remove messages and hide the quit button 
-            let divMsg = document.getElementById("messages");
-            divMsg.parentNode.removeChild(divMsg);
-            document.getElementById("button_quit").style.display = "none";
-            let divConvo = document.getElementById("conversation");
-            divConvo.innerHTML += `<div id="messages"></div>`;
-
-
+            deleteMessages();
 
 
         });
