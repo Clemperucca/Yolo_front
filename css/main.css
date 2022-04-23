@@ -18,6 +18,16 @@ body {
 
 
 
+#addFriends #buttonAdd {
+  display: grid;
+  text-align: center;
+  font-size: medium;
+  width: 50%;
+  margin: auto;
+  border-radius: 20px;
+  background-color: #777;
+}
+
 /*pop up*/
 .modal {
   z-index: 2;
@@ -104,6 +114,7 @@ body {
   position: relative;
   display: block;
   top: 0;
+  background-color: #D3D0CB;
 
 }
 
@@ -122,7 +133,17 @@ body {
 }
 
 
-.heading {
+#headingLeft {
+  padding: 10px 16px 10px 15px;
+  margin: 0 !important;
+  height: 60px;
+  width: 100%;
+  background-color: #19768d;
+  z-index: 1000;
+
+}
+
+#friendName {
   padding: 10px 16px 10px 15px;
   margin: 0 !important;
   height: 60px;
@@ -130,6 +151,9 @@ body {
   background-color: #028090;
   z-index: 1000;
 }
+
+
+
 
 .heading-avatar {
   padding: 0 !important;
@@ -383,7 +407,7 @@ body {
 .message {
   padding: 0 !important;
   margin: 0 !important;
-  background-color: #eeece3;
+  background-color: #f5f0e2;
   background-size: cover;
   overflow-y: auto;
   height: calc(100% - 120px);
@@ -437,8 +461,6 @@ body {
 
 
 
-/*logo et texte */
-#Yolo_logo {}
 
 /*message receiver*/
 .receiver {
