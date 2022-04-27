@@ -147,7 +147,20 @@ function displayWaiting() {
         <header class="modalContainer"> Waiting for answer...</header>          
         </div >
     `;
-}
+};
+function displayDecline() {
+    let divModal = document.getElementById("modal");
+    divModal.innerHTML += `<div id="offer" class="modal">
+     <div class="modal-dialog">
+        <div class="modal-content">
+        <header class="modalContainer"> Offer declined, maybe he doesn't like you ...</header>          
+        </div >
+    `;
+};
+
+function hideDecline() {
+    document.getElementById("offer").style.display = "none";
+};
 
 function changeWhiteSpacesIntoUnderscore(word) {
     word = word.replace(/\s+/g, '_');
@@ -301,8 +314,13 @@ socket.on("answer", async receiverName => {
     //Setting the caller (his) local description
     await pcCaller.setLocalDescription(CallerSdp);
 });
-//Waiting for callee sdp 
 
+socket.on("decline", ev => {
+    document.getElementById("offer").style.display = "none";
+    displayDecline();
+    setTimeout(hideDecline(), 4000);
+
+});
 // when callee send spd info
 socket.on("calleeSdp", async calleeSdp => {
     //Caller set callee description
@@ -477,7 +495,12 @@ document.addEventListener('click', function (e) {
     //handle decline offer
     if (e.target && e.target.className == 'declineButton') {
         document.getElementById("offer").style.display = "none";
-        socket.emit("request", { type: "refuse", name: changeUnderscoreIntoWhiteSpaces(e.target.id) });
+        socket.emit("request", { type: "decline", name: changeUnderscoreIntoWhiteSpaces(e.target.id) });
+        document.getElementById("button_quit").style.display = "none";
+        let div = document.getElementById("userName")
+        div.style.display = "none";
+        putUserName();
+
 
     };
 
