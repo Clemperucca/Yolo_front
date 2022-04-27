@@ -63,7 +63,7 @@ io.on('connection', (socket) => {
     console.log("Received message:" + msg.type);
 
     let data = msg;
-    const { type, name, offer, answer, candidate, sdp } = data;
+    const { type, name, offer, answer, candidate, sdp, decline } = data;
 
 
 
