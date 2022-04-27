@@ -24,6 +24,19 @@ var pcCallee;
 var dataChannel;
 var dataChannelList = new Array();
 
+
+
+//put the name of the client in the front 
+let divHeader = document.getElementById("friendName");
+divHeader.innerHTML += `<div class="col-sm-8 col-xs-7 heading-name" id = "yourName">
+            <a class="heading-name-meta">Hello ${userName} !
+            </a>
+          </div>
+        `;
+function putUserName() {
+    document.getElementById("yourName").style.display = "initial";
+};
+
 //envoie msg 
 
 let SendButton = document.getElementById("button");
@@ -104,20 +117,26 @@ function displayOffer(senderName) {
     divModal.innerHTML += `<div id="offer" class="modal">
         <div class="modal-dialog">
           <div class="modal-content">
-            <header class="modalContainer"> Offer By ${senderName}</header>
-            <button class="acceptButton" id=${changeWhiteSpacesIntoUnderscore(senderName)}>Accept offer send by:${senderName}</button>     
+           <div class="total">
+            <div class="modalContainer"> Hi ! Somebody want to connect &#x1F600; </div>
+            <div class= "namename">  ${senderName} </div>
+            </div>
+            <button class="acceptButton" id=${changeWhiteSpacesIntoUnderscore(senderName)}><img src="/img/telephone.png" >Accept</button>   
+            <button class="declineButton" id=${changeWhiteSpacesIntoUnderscore(senderName)}><img src="/img/decline.png" >Decline</button>   
           </div >
         `;
 
-    // a ajouter coter caller aussi quand channel crée 
+
     let divHeader = document.getElementById("friendName");
-    divHeader.innerHTML += `<div class="col-sm-8 col-xs-7 heading-name">
+    document.getElementById("yourName").style.display = "none";
+    divHeader.innerHTML += `<div class="col-sm-8 col-xs-7 heading-name" id ="userName">
             <a class="heading-name-meta">${senderName}
             </a>
             <spa>Online</span>
           </div>
           <button class="btn btn-secondary pull-right"id="button_quit">Quitter la conversation</button>
           `;
+
 }
 
 function displayWaiting() {
@@ -138,15 +157,7 @@ function changeUnderscoreIntoWhiteSpaces(word) {
     word = word.replace('_', ' ');
     return word;
 }
-/*
-    const stream = navigator.mediaDevices.getUserMedia({ audio: true });
- 
-    var pcCaller = new RTCPeerConnection(options);;
-    const audioTrack = stream.getTracks().array.forEach(track => {
-     pcCaller.addTrack(track, stream);
-    });;
- 
-*/
+
 
 
 var cells = document.getElementById("cells");
@@ -174,7 +185,7 @@ function addUsers(user) {
                     <div class="col-sm-8 col-xs-8 sideBar-name">
                         <span class="name-meta">${user}
                         </span>
-                         <p><button class="offerButton" id="${user}">Make an offer</button></p>
+                        <button class="offerButton" id="${user}">Send an offer <img src="/img/offer.png"> </button>
                     </div>
                 </div>
             </div>
@@ -194,6 +205,45 @@ function deleteUser(user) {
     let userToDelete = document.getElementById(user);
     userToDelete.parentNode.removeChild(userToDelete);
 };
+function whatchForClosing(dataChannel) {
+    dataChannel.addEventListener("close", ev => {
+        console.log(dataChannel.readyState);
+        let divName = document.getElementById("userName");
+        divName.style.display = "none";
+        putUserName();
+        deleteMessages();
+    });
+
+};
+
+function closeDc(dataChannel) {
+    let quitButton = document.getElementById("button_quit");
+    quitButton.addEventListener("click", e => {
+        dataChannel.close();
+        deleteMessages();
+        let div = document.getElementById("userName")
+        div.style.display = "none";
+        putUserName();
+
+    });
+
+}
+
+
+//fonctions menu
+function openNav() {
+    document.getElementById("sideNavigation").style.width = "180px";
+    document.getElementById("main").style.marginLeft = "180px";
+}
+
+function closeNav() {
+    document.getElementById("sideNavigation").style.width = "0";
+    document.getElementById("main").style.marginLeft = "0";
+}
+
+
+
+
 socket.on("newUser", user => {
     addUsers(user);
     console.log("new user :" + user);
@@ -240,7 +290,8 @@ socket.on("answer", async receiverName => {
     });
 
 
-
+    whatchForClosing(dataChannel);
+    closeDc(dataChannel);
 
 
 
@@ -338,11 +389,10 @@ socket.on("pcOffer", async (callerSdp, dc) => {
 
         sendMessage(dataChannel, "coucou bro", userName);
         messageReceive(dataChannel);
+        //functions for closing the dc
+        whatchForClosing(dataChannel);
+        closeDc(dataChannel);
 
-        dataChannel.addEventListener("close", ev => {
-            console.log(dataChannel.readyState);
-            deleteMessages();
-        });
 
     }, false);
     //messageReceive(dataChannel);
@@ -392,7 +442,8 @@ socket.on("disconnection", senderName2 => {
 });
 
 
-const acceptButton = document.getElementsByClassName("Accept");
+const acceptButton = document.getElementsByClassName("acceptButton");
+const declineButton = document.getElementsByClassName("acceptButton");
 document.addEventListener('click', function (e) {
     if (e.target && e.target.className == 'offerButton') {
         //Caller sending his offer to the callee 
@@ -401,7 +452,8 @@ document.addEventListener('click', function (e) {
         //display pop up
         displayWaiting();
         let divHeader = document.getElementById("friendName");
-        divHeader.innerHTML += `<div class="col-sm-8 col-xs-7 heading-name">
+        document.getElementById("yourName").style.display = "none";
+        divHeader.innerHTML += `<div class="col-sm-8 col-xs-7 heading-name" id ="userName">
             <a class="heading-name-meta">${e.target.id}
             </a>
             <span>Online</span>
@@ -409,16 +461,6 @@ document.addEventListener('click', function (e) {
           <button class="btn btn-secondary pull-right" id="button_quit">Quitter la conversation</button>
           `;
         document.getElementById("logo_title").style.display = "none";
-        //handle click on button quit 
-        let quitButton = document.getElementById("button_quit");
-        quitButton.addEventListener("click", e => {
-            dataChannel.close();
-            let state = dataChannel.readyState;
-            console.log("state of the dc : " + state);
-            deleteMessages();
-
-
-        });
     }
     if (e.target && e.target.className == 'acceptButton') {
         console.log(e.target);
@@ -431,7 +473,13 @@ document.addEventListener('click', function (e) {
 
 
 
-    }
+    };
+    //handle decline offer
+    if (e.target && e.target.className == 'declineButton') {
+        document.getElementById("offer").style.display = "none";
+        socket.emit("request", { type: "refuse", name: changeUnderscoreIntoWhiteSpaces(e.target.id) });
+
+    };
 
 });
 
