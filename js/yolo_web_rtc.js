@@ -3,6 +3,8 @@ var userName = "patoche " + Math.random();
 
 socket.emit("request", msg = { type: "login", name: userName });
 
+//get_users
+
 
 //TO DO  disable button make an offer durong a convo by using element.disabled 
 /*
@@ -137,25 +139,35 @@ function displayOffer(senderName) {
           <button class="btn btn-secondary pull-right"id="button_quit">Quitter la conversation</button>
           `;
 
+};
+
+function searchFriend() {
+    let divModal = document.getElementById("modal");
+    divModal.innerHTML += `<div id="offer" class="modal">
+        <div class="modal-dialog">
+            <div class="modal-content" id = "search">
+                <input id="searchbar" onkeyup="search_friend()" type="text" name="search" placeholder="Search a friend..">
+            </div>
+        </div>`
 }
 
 function displayWaiting() {
     let divModal = document.getElementById("modal");
-    divModal.innerHTML += `<div id="offer" class="modal">
-     <div class="modal-dialog">
-        <div class="modal-content">
-        <header class="modalContainer"> Waiting for answer...</header>          
-        </div >
-    `;
+    divModal.innerHTML += `<div id="offer" class="modal" >
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <header class="modalContainer"> Waiting for answer...</header>
+                        </div >
+                        `;
 };
 function displayDecline() {
     let divModal = document.getElementById("modal");
     divModal.innerHTML += `<div id="offer" class="modal">
-     <div class="modal-dialog">
-        <div class="modal-content">
-        <header class="modalContainer"> Offer declined, maybe he doesn't like you ...</header>          
-        </div >
-    `;
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <header class="modalContainer"> Offer declined, maybe he doesn't like you ...</header>
+                                </div >
+                                `;
 };
 
 function hideDecline() {
@@ -187,23 +199,23 @@ function addUsers(user) {
     //Add to the list of user on the UI 
     let contactList = document.getElementById("friends");
     contactList.innerHTML += `
-        <div class="row sideBar-body" id="${user}">
-            <div class="col-sm-3 col-xs-3 sideBar-avatar">
-                <div class="avatar-icon">
-                    <img src="img/man-2-512.png">
-                </div>
-            </div>
-            <div class="col-sm-9 col-xs-9 sideBar-main">
-                <div class="row">
-                    <div class="col-sm-8 col-xs-8 sideBar-name">
-                        <span class="name-meta">${user}
-                        </span>
-                        <button class="offerButton" id="${user}">Send an offer <img src="/img/offer.png"> </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        `;
+                                <div class="row sideBar-body" id="${user}">
+                                    <div class="col-sm-3 col-xs-3 sideBar-avatar">
+                                        <div class="avatar-icon">
+                                            <img src="img/man-2-512.png">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-9 col-xs-9 sideBar-main">
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-8 sideBar-name">
+                                                <span class="name-meta">${user}
+                                                </span>
+                                                <button class="offerButton" id="${user}">Send an offer <img src="/img/offer.png"> </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                `;
 
 
 };
@@ -234,15 +246,57 @@ function closeDc(dataChannel) {
     quitButton.addEventListener("click", e => {
         dataChannel.close();
         deleteMessages();
-        let div = document.getElementById("userName")
+        let div = document.getElementById("userName");
         div.style.display = "none";
         putUserName();
 
     });
 
-}
+};
 
+function parseData(response) {
+    console.log("dans parse data");
+    search_response = JSON.parse(response);
+    console.log("search_response : ");
+    console.log(search_response);
 
+    document.getElementById("response").innerHTML = `</br>`;
+    for (var i = 0; i < search_response.length; i++) {
+        document.getElementById("response").innerHTML += `<button onclick="addThisFriend('${search_response[i].id}','${search_response[i].full_name}');">ajouter</button>`;
+        document.getElementById("response").innerHTML += (search_response[i].full_name)
+        document.getElementById("response").innerHTML += "</br>";
+
+    };
+};
+async function addThisFriend(id, full_name) {
+    let xhr = new XMLHttpRequest();
+    console.log(full_name);
+    let param = `friend_id_to_add=` + id + `&friend_full_name=` + full_name;
+    xhr.open("POST", url + `/add_friend/?` + param, true);
+    xhr.send()
+    await delay(300)
+    window.location.reload();
+};
+function search() {
+    const val = document.querySelector('input').value;
+    console.log(val);
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", url + `/get_users/` + val, false);
+    xhr.onload = () => {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                console.log(xhr.statusText);
+                parseData(xhr.responseText);
+            } else {
+                console.error(xhr.statusText);
+            }
+        }
+    };
+    xhr.onerror = () => {
+        console.error(xhr.statusText);
+    };
+    xhr.send(null);
+};
 //fonctions menu
 function openNav() {
     document.getElementById("sideNavigation").style.width = "180px";
@@ -279,6 +333,7 @@ socket.on("connectedUsers", usersAlreadyConnected => {
 socket.on("answer", async receiverName => {
     //création sdp et envoi de sdp puis de ICE
     //côté caller
+    console.log("entré dans answer");
     callee = receiverName;
     console.log("Connexion accepté de :" + receiverName);
     document.getElementById("offer").style.display = "none";
@@ -315,10 +370,20 @@ socket.on("answer", async receiverName => {
     await pcCaller.setLocalDescription(CallerSdp);
 });
 
-socket.on("decline", ev => {
+function delay(n) {
+    return new Promise(function (resolve) {
+        setTimeout(resolve, n)
+    });
+};
+
+socket.on("decline", async ev => {
     document.getElementById("offer").style.display = "none";
     displayDecline();
-    setTimeout(hideDecline(), 4000);
+
+    //await delay(1000);
+    console.log("delay");
+    setTimeout(hideDecline, 1000);
+
 
 });
 // when callee send spd info
@@ -330,7 +395,7 @@ socket.on("calleeSdp", async calleeSdp => {
     console.log("callee descripiton set");
     console.log(remoteDesc);
 
-    //navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+    //navigator.mediaDevices.getUserMedia({audio: true, video: true });
     //pcCaller.addStream(localStream);
 
     //Then 
@@ -396,6 +461,7 @@ socket.on("offer", senderName => {
 //receiving a peerConnection offer from the caller (send by the signaling server)
 socket.on("pcOffer", async (callerSdp, dc) => {
     //creating the callee peer connection
+    console.log("entré dans pcoffer");
     pcCallee = new RTCPeerConnection();
     // dataChannel = dc;
     // console.log(dc);
@@ -462,6 +528,7 @@ socket.on("disconnection", senderName2 => {
 
 const acceptButton = document.getElementsByClassName("acceptButton");
 const declineButton = document.getElementsByClassName("acceptButton");
+const searchButton = document.getElementById("buttonAdd");
 document.addEventListener('click', function (e) {
     if (e.target && e.target.className == 'offerButton') {
         //Caller sending his offer to the callee 
@@ -471,13 +538,13 @@ document.addEventListener('click', function (e) {
         displayWaiting();
         let divHeader = document.getElementById("friendName");
         document.getElementById("yourName").style.display = "none";
-        divHeader.innerHTML += `<div class="col-sm-8 col-xs-7 heading-name" id ="userName">
-            <a class="heading-name-meta">${e.target.id}
-            </a>
-            <span>Online</span>
-          </div>
-          <button class="btn btn-secondary pull-right" id="button_quit">Quitter la conversation</button>
-          `;
+        divHeader.innerHTML += `<div class="col-sm-8 col-xs-7 heading-name" id="userName">
+                                    <a class="heading-name-meta">${e.target.id}
+                                    </a>
+                                    <span>Online</span>
+                                </div>
+                                <button class="btn btn-secondary pull-right" id="button_quit">Quitter la conversation</button>
+                                `;
         document.getElementById("logo_title").style.display = "none";
     }
     if (e.target && e.target.className == 'acceptButton') {
@@ -505,6 +572,10 @@ document.addEventListener('click', function (e) {
     };
 
 });
+
+searchButton.addEventListener("click", e => {
+    searchFriend();
+})
 
 //closing the app
 window.addEventListener('beforeunload', e => {

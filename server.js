@@ -114,13 +114,15 @@ io.on('connection', (socket) => {
       case "decline":
         recipientSocketId = lookForUserSocketId(msg.name);
         senderName = lookForUserName(socket.id);
+        console.log("decline :" + msg.name);
         if (senderName != null && recipientSocketId != null) {
           //send the answer to the recipient 
           io.to(recipientSocketId).emit("decline", senderName);
+
         }
-
+        break;
       case "sdpCaller":
-
+        console.log("envoie sdp:" + msg.name);
         //Get the recipient socketId
         recipientSocketId = lookForUserSocketId(msg.name);
         console.log(msg.dc);
