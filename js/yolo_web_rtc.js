@@ -56,9 +56,28 @@ SendButton.addEventListener("click", e => {
     divMessage.value = "";
 });
 
+
 function deleteMessages() {
     //remove messages and hide the quit button 
+    let messages = "";
     let divMsg = document.getElementById("messages");
+    //console.log(divMsg);
+    let divMessages = document.getElementsByClassName("message-text");
+    for (let i = 0; i < divMessages.length; i++) {
+        //console.log(divMessages[i].parentElement.children);
+        if (divMessages[i].parentNode.className == "receiver") {
+            // console.log(divMessages[i].textContent.trimStart());
+            messages += "$£€/receiver/";
+        }
+        else if (divMessages[i].parentNode.className == "sender") {
+            messages += "$£€/sender/";
+        }
+        message = divMessages[i].textContent.trimStart().trimEnd();
+        messages += message;
+        return messages;
+    }
+
+    console.log(messages);
     divMsg.parentNode.removeChild(divMsg);
     document.getElementById("button_quit").style.display = "none";
     let divConvo = document.getElementById("conversation");
