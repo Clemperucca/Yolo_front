@@ -67,14 +67,14 @@ function deleteMessages() {
         //console.log(divMessages[i].parentElement.children);
         if (divMessages[i].parentNode.className == "receiver") {
             // console.log(divMessages[i].textContent.trimStart());
-            messages += "$£€/receiver/";
+            messages += "$£€/receiv/";
         }
         else if (divMessages[i].parentNode.className == "sender") {
             messages += "$£€/sender/";
         }
         message = divMessages[i].textContent.trimStart().trimEnd();
         messages += message;
-        return messages;
+
     }
 
     console.log(messages);
@@ -83,6 +83,21 @@ function deleteMessages() {
     let divConvo = document.getElementById("conversation");
     divConvo.innerHTML += `<div id="messages"></div>`;
     document.getElementById("logo_title").style.display = "initial";
+    return messages;
+}
+
+function displayLoadedConversation(messages) {
+    let messagesToDisplay = messages.split("$£€");
+    messagesToDisplay.forEach(message => {
+        if (message.slice(0, 8) == "/receiv/") {
+            //Afficher le message.slice(8) avec la classe receiver
+            console.log(message.slice(8));
+        }
+        else if (message.slice(0, 8) == "/sender/") {
+            //Afficher le message.slice(8) avec la classe sender
+            console.log(message.slice(8));
+        }
+    });
 }
 
 function messageReceive(dataChannel) {
