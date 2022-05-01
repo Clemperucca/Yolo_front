@@ -4,6 +4,7 @@ var userName = "patoche " + Math.random();
 socket.emit("request", msg = { type: "login", name: userName });
 
 //get_users
+//sanytise input
 
 
 //TO DO  disable button make an offer durong a convo by using element.disabled 
@@ -240,6 +241,10 @@ function whatchForClosing(dataChannel) {
         divName.style.display = "none";
         putUserName();
         deleteMessages();
+        //marche pas 
+        document.getElementsByClassName("offerButton").disabled = false;
+
+
     });
 
 };
@@ -556,6 +561,8 @@ document.addEventListener('click', function (e) {
         console.log(changeUnderscoreIntoWhiteSpaces(e.target.id));
         caller = changeUnderscoreIntoWhiteSpaces(e.target.id);
         document.getElementById("logo_title").style.display = "none";
+        //marche pas 
+        document.getElementsByClassName("offerButton").disabled = true;
 
 
 
