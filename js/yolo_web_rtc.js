@@ -181,10 +181,10 @@ function displayWaiting() {
 };
 function displayDecline() {
     let divModal = document.getElementById("modal");
-    divModal.innerHTML += `<div id="offer" class="modal">
+    divModal.innerHTML += `<div id="offer1" class="modal">
         <div class="modal-dialog">
             <div class="modal-content">
-                <button type="button" class="element-head" aria-label="Close">
+                <button type="button" class="element-head" aria-label="Close" id ="button_quit_decline">
                     <span aria-hidden="true">&times;</span>
                 </button>
                 <header class="modalContainer"> Offer declined, maybe he doesn't like you ...</header>
@@ -193,7 +193,7 @@ function displayDecline() {
 };
 
 function hideDecline() {
-    document.getElementById("offer").style.display = "none";
+    document.getElementById("offer1").style.display = "none";
 };
 
 function changeWhiteSpacesIntoUnderscore(word) {
@@ -267,10 +267,6 @@ function closeDc(dataChannel) {
     let quitButton = document.getElementById("button_quit");
     quitButton.addEventListener("click", e => {
         dataChannel.close();
-        deleteMessages();
-        let div = document.getElementById("userName");
-        div.style.display = "none";
-        putUserName();
 
     });
 
@@ -401,10 +397,12 @@ function delay(n) {
 socket.on("decline", async ev => {
     document.getElementById("offer").style.display = "none";
     displayDecline();
-
+    const quitDecline = document.getElementById("button_quit_decline");
     //await delay(1000);
-    console.log("delay");
-    setTimeout(hideDecline, 1000);
+    quitDecline.addEventListener("click", e => {
+        hideDecline();
+    });
+
 
 
 });
@@ -551,6 +549,7 @@ socket.on("disconnection", senderName2 => {
 const acceptButton = document.getElementsByClassName("acceptButton");
 const declineButton = document.getElementsByClassName("acceptButton");
 const searchButton = document.getElementById("buttonAdd");
+
 document.addEventListener('click', function (e) {
     if (e.target && e.target.className == 'offerButton') {
         //Caller sending his offer to the callee 
@@ -570,7 +569,6 @@ document.addEventListener('click', function (e) {
         document.getElementById("logo_title").style.display = "none";
     }
     if (e.target && e.target.className == 'acceptButton') {
-        console.log(e.target);
         document.getElementById("offer").style.display = "none";
         //callee accepted the offer and sending back his answer to the caller 
         socket.emit("request", { type: "answer", name: changeUnderscoreIntoWhiteSpaces(e.target.id) });
@@ -598,6 +596,8 @@ document.addEventListener('click', function (e) {
 searchButton.addEventListener("click", e => {
     searchFriend();
 })
+
+
 
 //closing the app
 window.addEventListener('beforeunload', e => {
