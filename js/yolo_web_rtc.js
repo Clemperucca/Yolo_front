@@ -57,14 +57,48 @@ SendButton.addEventListener("click", e => {
     divMessage.value = "";
 });
 
+
 function deleteMessages() {
     //remove messages and hide the quit button 
+    let messages = "";
     let divMsg = document.getElementById("messages");
+    //console.log(divMsg);
+    let divMessages = document.getElementsByClassName("message-text");
+    for (let i = 0; i < divMessages.length; i++) {
+        //console.log(divMessages[i].parentElement.children);
+        if (divMessages[i].parentNode.className == "receiver") {
+            // console.log(divMessages[i].textContent.trimStart());
+            messages += "$£€/receiv/";
+        }
+        else if (divMessages[i].parentNode.className == "sender") {
+            messages += "$£€/sender/";
+        }
+        message = divMessages[i].textContent.trimStart().trimEnd();
+        messages += message;
+
+    }
+
+    console.log(messages);
     divMsg.parentNode.removeChild(divMsg);
     document.getElementById("button_quit").style.display = "none";
     let divConvo = document.getElementById("conversation");
     divConvo.innerHTML += `<div id="messages"></div>`;
     document.getElementById("logo_title").style.display = "initial";
+    return messages;
+}
+
+function displayLoadedConversation(messages) {
+    let messagesToDisplay = messages.split("$£€");
+    messagesToDisplay.forEach(message => {
+        if (message.slice(0, 8) == "/receiv/") {
+            //Afficher le message.slice(8) avec la classe receiver
+            console.log(message.slice(8));
+        }
+        else if (message.slice(0, 8) == "/sender/") {
+            //Afficher le message.slice(8) avec la classe sender
+            console.log(message.slice(8));
+        }
+    });
 }
 
 function messageReceive(dataChannel) {
