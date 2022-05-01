@@ -163,11 +163,14 @@ function displayWaiting() {
 function displayDecline() {
     let divModal = document.getElementById("modal");
     divModal.innerHTML += `<div id="offer" class="modal">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <header class="modalContainer"> Offer declined, maybe he doesn't like you ...</header>
-                                </div >
-                                `;
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <button type="button" class="element-head" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <header class="modalContainer"> Offer declined, maybe he doesn't like you ...</header>
+            </div >
+            `;
 };
 
 function hideDecline() {
@@ -199,23 +202,23 @@ function addUsers(user) {
     //Add to the list of user on the UI 
     let contactList = document.getElementById("friends");
     contactList.innerHTML += `
-                                <div class="row sideBar-body" id="${user}">
-                                    <div class="col-sm-3 col-xs-3 sideBar-avatar">
-                                        <div class="avatar-icon">
-                                            <img src="img/man-2-512.png">
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-9 col-xs-9 sideBar-main">
-                                        <div class="row">
-                                            <div class="col-sm-8 col-xs-8 sideBar-name">
-                                                <span class="name-meta">${user}
-                                                </span>
-                                                <button class="offerButton" id="${user}">Send an offer <img src="/img/offer.png"> </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                `;
+            <div class="row sideBar-body" id="${user}">
+                <div class="col-sm-3 col-xs-3 sideBar-avatar">
+                    <div class="avatar-icon">
+                        <img src="img/man-2-512.png">
+                    </div>
+                </div>
+                <div class="col-sm-9 col-xs-9 sideBar-main">
+                    <div class="row">
+                        <div class="col-sm-8 col-xs-8 sideBar-name">
+                            <span class="name-meta">${user}
+                            </span>
+                            <button class="offerButton" id="${user}">Send an offer <img src="/img/offer.png"> </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
 
 
 };
