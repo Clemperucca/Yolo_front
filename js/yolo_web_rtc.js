@@ -188,7 +188,7 @@ function searchFriend() {
 
 function displayWaiting() {
     let divModal = document.getElementById("modal");
-    divModal.innerHTML += `<div id="offer" class="modal" >
+    divModal.innerHTML += `<div id="offer2" class="modal" >
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <header class="modalContainer"> Waiting for answer...</header>
@@ -371,10 +371,9 @@ socket.on("connectedUsers", usersAlreadyConnected => {
 socket.on("answer", async receiverName => {
     //création sdp et envoi de sdp puis de ICE
     //côté caller
-    console.log("entré dans answer");
     callee = receiverName;
     console.log("Connexion accepté de :" + receiverName);
-    document.getElementById("offer").style.display = "none";
+    document.getElementById("offer2").style.display = "none";
 
 
     //Creating the caller peer connection and his sdp
@@ -415,7 +414,7 @@ function delay(n) {
 };
 
 socket.on("decline", async ev => {
-    document.getElementById("offer").style.display = "none";
+    document.getElementById("offer2").style.display = "none";
     displayDecline();
     const quitDecline = document.getElementById("button_quit_decline");
     //await delay(1000);
