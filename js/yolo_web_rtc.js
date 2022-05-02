@@ -80,7 +80,7 @@ function deleteMessages() {
 
     console.log(messages);
     divMsg.parentNode.removeChild(divMsg);
-    document.getElementById("button_quit").style.display = "none";
+    document.getElementById("button_quit").parentNode.removeChild(document.getElementById("button_quit"));
     let divConvo = document.getElementById("conversation");
     divConvo.innerHTML += `<div id="messages"></div>`;
     document.getElementById("logo_title").style.display = "initial";
@@ -227,7 +227,8 @@ function displayOldConv() {
 };
 
 function hideDecline() {
-    document.getElementById("offer1").style.display = "none";
+    const offer1 = document.getElementById("offer1");
+    offer1.parentNode.removeChild(offer1);
 };
 
 function changeWhiteSpacesIntoUnderscore(word) {
@@ -290,7 +291,7 @@ function whatchForClosing(dataChannel) {
     dataChannel.addEventListener("close", ev => {
         console.log(dataChannel.readyState);
         let divName = document.getElementById("userName");
-        divName.style.display = "none";
+        divName.parentNode.removeChild(divName);
         putUserName();
         deleteMessages();
         //marche pas 
@@ -391,7 +392,7 @@ socket.on("answer", async receiverName => {
     //côté caller
     callee = receiverName;
     console.log("Connexion accepté de :" + receiverName);
-    document.getElementById("offer2").style.display = "none";
+    document.getElementById("offer2").parentNode.removeChild(document.getElementById("offer2"));
 
 
     //Creating the caller peer connection and his sdp
@@ -432,15 +433,17 @@ function delay(n) {
 };
 
 socket.on("decline", async ev => {
-    document.getElementById("offer2").style.display = "none";
+    document.getElementById("offer2").parentNode.removeChild(document.getElementById("offer2"));
     displayDecline();
     const quitDecline = document.getElementById("button_quit_decline");
-    //await delay(1000);
     quitDecline.addEventListener("click", e => {
         hideDecline();
     });
-
-
+    let div = document.getElementById("userName");
+    div.parentNode.removeChild(div);
+    let button_quit = document.getElementById("button_quit");
+    button_quit.parentNode.removeChild(button_quit);
+    putUserName();
 
 });
 // when callee send spd info
@@ -607,7 +610,7 @@ document.addEventListener('click', function (e) {
         document.getElementById("logo_title").style.display = "none";
     }
     if (e.target && e.target.className == 'acceptButton') {
-        document.getElementById("offer").style.display = "none";
+        document.getElementById("offer").parentNode.removeChild(document.getElementById("offer"))
         //callee accepted the offer and sending back his answer to the caller 
         socket.emit("request", { type: "answer", name: changeUnderscoreIntoWhiteSpaces(e.target.id) });
         console.log(changeUnderscoreIntoWhiteSpaces(e.target.id));
@@ -621,11 +624,12 @@ document.addEventListener('click', function (e) {
     };
     //handle decline offer
     if (e.target && e.target.className == 'declineButton') {
-        document.getElementById("offer").style.display = "none";
+        document.getElementById("offer").parentNode.removeChild(document.getElementById("offer"));
         socket.emit("request", { type: "decline", name: changeUnderscoreIntoWhiteSpaces(e.target.id) });
-        document.getElementById("button_quit").style.display = "none";
-        let div = document.getElementById("userName")
-        div.style.display = "none";
+        let button_quit = document.getElementById("button_quit");
+        button_quit.parentNode.removeChild(button_quit);
+        let div = document.getElementById("userName");
+        div.parentNode.removeChild(div);
         putUserName();
 
 
