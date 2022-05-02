@@ -99,7 +99,9 @@ function displayLoadedConversation(messages) {
             console.log(message.slice(8));
         }
     });
-}
+};
+
+
 
 function messageReceive(dataChannel) {
     dataChannel.addEventListener("message", event => {
@@ -184,7 +186,7 @@ function searchFriend() {
                 <input id="searchbar" onkeyup="search_friend()" type="text" name="search" placeholder="Search a friend..">
             </div>
         </div>`
-}
+};
 
 function displayWaiting() {
     let divModal = document.getElementById("modal");
@@ -206,6 +208,22 @@ function displayDecline() {
                 <header class="modalContainer"> Offer declined, maybe he doesn't like you ...</header>
             </div >
             `;
+};
+
+function displayOldConv() {
+    let divModal = document.getElementById("modal");
+    divModal.innerHTML += `
+    <div class="oldConv">
+        <div class="col-sm-4 ">
+            <div class="side-one">
+                <div class="row heading" id="headingLeft">
+                    <h4 class="text-center">Mes conversations</h4>
+                </div>
+                <div class="row sideBar" id="conv">
+                </div>
+            </div>
+        </div>
+    </div>`
 };
 
 function hideDecline() {
@@ -237,23 +255,23 @@ function addUsers(user) {
     //Add to the list of user on the UI 
     let contactList = document.getElementById("friends");
     contactList.innerHTML += `
-            <div class="row sideBar-body" id="${user}">
-                <div class="col-sm-3 col-xs-3 sideBar-avatar">
-                    <div class="avatar-icon">
-                        <img src="img/man-2-512.png">
+                <div class="row sideBar-body" id="${user}">
+                    <div class="col-sm-3 col-xs-3 sideBar-avatar">
+                        <div class="avatar-icon">
+                            <img src="img/man-2-512.png">
+                        </div>
                     </div>
-                </div>
-                <div class="col-sm-9 col-xs-9 sideBar-main">
-                    <div class="row">
-                        <div class="col-sm-8 col-xs-8 sideBar-name">
-                            <span class="name-meta">${user}
-                            </span>
-                            <button class="offerButton" id="${user}">Send an offer <img src="/img/offer.png"> </button>
+                    <div class="col-sm-9 col-xs-9 sideBar-main">
+                        <div class="row">
+                            <div class="col-sm-8 col-xs-8 sideBar-name">
+                                <span class="name-meta">${user}
+                                </span>
+                                <button class="offerButton" id="${user}">Send an offer <img src="/img/offer.png"> </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            `;
+                `;
 
 
 };
@@ -568,6 +586,7 @@ socket.on("disconnection", senderName2 => {
 const acceptButton = document.getElementsByClassName("acceptButton");
 const declineButton = document.getElementsByClassName("acceptButton");
 const searchButton = document.getElementById("buttonAdd");
+const convButton = document.getElementById("buttonConv");
 
 document.addEventListener('click', function (e) {
     if (e.target && e.target.className == 'offerButton') {
@@ -616,7 +635,11 @@ document.addEventListener('click', function (e) {
 
 searchButton.addEventListener("click", e => {
     searchFriend();
-})
+});
+
+convButton.addEventListener("click", e => {
+    displayOldConv();
+});
 
 
 
