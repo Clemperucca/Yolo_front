@@ -7,6 +7,7 @@ let msg;
 socket.emit("request", msg = { type: "login", name: userName });
 
 //get_users
+//sanytise input
 
 
 //TO DO  disable button make an offer durong a convo by using element.disabled 
@@ -83,7 +84,7 @@ async function deleteMessages(convName) {
 
     console.log(messages);
     divMsg.parentNode.removeChild(divMsg);
-    document.getElementById("button_quit").style.display = "none";
+    document.getElementById("button_quit").parentNode.removeChild(document.getElementById("button_quit"));
     let divConvo = document.getElementById("conversation");
     divConvo.innerHTML += `<div id="messages"></div>`;
     document.getElementById("logo_title").style.display = "initial";
@@ -131,7 +132,9 @@ function displayLoadedConversation(messages) {
             //console.log(message.slice(8));
         }
     });
-}
+};
+
+
 
 function messageReceive(dataChannel) {
     dataChannel.addEventListener("message", event => {
@@ -216,11 +219,11 @@ function searchFriend() {
                 <input id="searchbar" onkeyup="search_friend()" type="text" name="search" placeholder="Search a friend..">
             </div>
         </div>`
-}
+};
 
 function displayWaiting() {
     let divModal = document.getElementById("modal");
-    divModal.innerHTML += `<div id="offer" class="modal" >
+    divModal.innerHTML += `<div id="offer2" class="modal" >
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <header class="modalContainer"> Waiting for answer...</header>
@@ -240,8 +243,25 @@ function displayDecline() {
             `;
 };
 
+function displayOldConv() {
+    let divModal = document.getElementById("modal");
+    divModal.innerHTML += `
+    <div class="oldConv">
+        <div class="col-sm-4 ">
+            <div class="side-one">
+                <div class="row heading" id="headingLeft">
+                    <h4 class="text-center">Mes conversations</h4>
+                </div>
+                <div class="row sideBar" id="conv">
+                </div>
+            </div>
+        </div>
+    </div>`
+};
+
 function hideDecline() {
-    document.getElementById("offer1").style.display = "none";
+    const offer1 = document.getElementById("offer1");
+    offer1.parentNode.removeChild(offer1);
 };
 
 function changeWhiteSpacesIntoUnderscore(word) {
@@ -269,23 +289,23 @@ function addUsers(user) {
     //Add to the list of user on the UI 
     let contactList = document.getElementById("friends");
     contactList.innerHTML += `
-            <div class="row sideBar-body" id="${user}">
-                <div class="col-sm-3 col-xs-3 sideBar-avatar">
-                    <div class="avatar-icon">
-                        <img src="img/man-2-512.png">
+                <div class="row sideBar-body" id="${user}">
+                    <div class="col-sm-3 col-xs-3 sideBar-avatar">
+                        <div class="avatar-icon">
+                            <img src="img/man-2-512.png">
+                        </div>
                     </div>
-                </div>
-                <div class="col-sm-9 col-xs-9 sideBar-main">
-                    <div class="row">
-                        <div class="col-sm-8 col-xs-8 sideBar-name">
-                            <span class="name-meta">${user}
-                            </span>
-                            <button class="offerButton" id="${user}">Send an offer <img src="/img/offer.png"> </button>
+                    <div class="col-sm-9 col-xs-9 sideBar-main">
+                        <div class="row">
+                            <div class="col-sm-8 col-xs-8 sideBar-name">
+                                <span class="name-meta">${user}
+                                </span>
+                                <button class="offerButton" id="${user}">Send an offer <img src="/img/offer.png"> </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            `;
+                `;
 
 
 };
@@ -304,9 +324,13 @@ function whatchForClosing(dataChannel, convName) {
     dataChannel.addEventListener("close", ev => {
         console.log(dataChannel.readyState);
         let divName = document.getElementById("userName");
-        divName.style.display = "none";
+        divName.parentNode.removeChild(divName);
         putUserName();
         deleteMessages(convName);
+        //marche pas
+        document.getElementsByClassName("offerButton").disabled = false;
+
+
     });
 
 };
@@ -399,10 +423,9 @@ socket.on("connectedUsers", usersAlreadyConnected => {
 socket.on("answer", async receiverName => {
     //création sdp et envoi de sdp puis de ICE
     //côté caller
-    console.log("entré dans answer");
     callee = receiverName;
     console.log("Connexion accepté de :" + receiverName);
-    document.getElementById("offer").style.display = "none";
+    document.getElementById("offer2").parentNode.removeChild(document.getElementById("offer2"));
 
 
     //Creating the caller peer connection and his sdp
@@ -443,15 +466,17 @@ function delay(n) {
 };
 
 socket.on("decline", async ev => {
-    document.getElementById("offer").style.display = "none";
+    document.getElementById("offer2").parentNode.removeChild(document.getElementById("offer2"));
     displayDecline();
     const quitDecline = document.getElementById("button_quit_decline");
-    //await delay(1000);
     quitDecline.addEventListener("click", e => {
         hideDecline();
     });
-
-
+    let div = document.getElementById("userName");
+    div.parentNode.removeChild(div);
+    let button_quit = document.getElementById("button_quit");
+    button_quit.parentNode.removeChild(button_quit);
+    putUserName();
 
 });
 // when callee send spd info
@@ -597,6 +622,7 @@ socket.on("disconnection", senderName2 => {
 const acceptButton = document.getElementsByClassName("acceptButton");
 const declineButton = document.getElementsByClassName("acceptButton");
 const searchButton = document.getElementById("buttonAdd");
+const convButton = document.getElementById("buttonConv");
 
 document.addEventListener('click', function (e) {
     if (e.target && e.target.className == 'offerButton') {
@@ -617,23 +643,26 @@ document.addEventListener('click', function (e) {
         document.getElementById("logo_title").style.display = "none";
     }
     if (e.target && e.target.className == 'acceptButton') {
-        document.getElementById("offer").style.display = "none";
+        document.getElementById("offer").parentNode.removeChild(document.getElementById("offer"))
         //callee accepted the offer and sending back his answer to the caller 
         socket.emit("request", { type: "answer", name: changeUnderscoreIntoWhiteSpaces(e.target.id) });
         console.log(changeUnderscoreIntoWhiteSpaces(e.target.id));
         caller = changeUnderscoreIntoWhiteSpaces(e.target.id);
         document.getElementById("logo_title").style.display = "none";
+        //marche pas 
+        document.getElementsByClassName("offerButton").disabled = true;
 
 
 
     };
     //handle decline offer
     if (e.target && e.target.className == 'declineButton') {
-        document.getElementById("offer").style.display = "none";
+        document.getElementById("offer").parentNode.removeChild(document.getElementById("offer"));
         socket.emit("request", { type: "decline", name: changeUnderscoreIntoWhiteSpaces(e.target.id) });
-        document.getElementById("button_quit").style.display = "none";
-        let div = document.getElementById("userName")
-        div.style.display = "none";
+        let button_quit = document.getElementById("button_quit");
+        button_quit.parentNode.removeChild(button_quit);
+        let div = document.getElementById("userName");
+        div.parentNode.removeChild(div);
         putUserName();
 
 
@@ -643,7 +672,11 @@ document.addEventListener('click', function (e) {
 
 searchButton.addEventListener("click", e => {
     searchFriend();
-})
+});
+
+convButton.addEventListener("click", e => {
+    displayOldConv();
+});
 
 
 
