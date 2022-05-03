@@ -201,13 +201,16 @@ function displayOffer(senderName) {
 
     let divHeader = document.getElementById("friendName");
     document.getElementById("yourName").style.display = "none";
+
     divHeader.innerHTML += `<div class="col-sm-8 col-xs-7 heading-name" id ="userName">
-            <a class="heading-name-meta">${senderName}
-            </a>
-            <spa>Online</span>
-          </div>
-          <button class="btn btn-secondary pull-right"id="button_quit">Quitter la conversation</button>
-          `;
+        <a class="heading-name-meta">${senderName}
+        </a>
+        <spa>Online</span>
+      </div>
+      <button class="btn btn-secondary pull-right"id="button_quit">Quitter la conversation</button>
+      `;
+
+
 
 };
 
@@ -337,8 +340,17 @@ function whatchForClosing(dataChannel, convName) {
 
 function closeDc(dataChannel) {
     let quitButton = document.getElementById("button_quit");
+    console.log("A3ZSEDRYGYHUJOIKPDUGAYIZHUE O8ZHUOIHZIOHDIUSHUOIDHOQSIHD9UHQUIH");
     quitButton.addEventListener("click", e => {
-        dataChannel.close();
+        if (dataChannelList.length > 0) {
+            for (let i = 0; i < dataChannelList.length; i++) {
+                dataChannelList[i].close();
+            }
+        }
+        else {
+            dataChannel.close();
+        }
+
 
     });
 
@@ -449,6 +461,7 @@ socket.on("answer", async receiverName => {
 
     whatchForClosing(dataChannel, callee);
     closeDc(dataChannel);
+
 
 
 
@@ -633,13 +646,16 @@ document.addEventListener('click', function (e) {
         displayWaiting();
         let divHeader = document.getElementById("friendName");
         document.getElementById("yourName").style.display = "none";
-        divHeader.innerHTML += `<div class="col-sm-8 col-xs-7 heading-name" id="userName">
-                                    <a class="heading-name-meta">${e.target.id}
-                                    </a>
-                                    <span>Online</span>
-                                </div>
-                                <button class="btn btn-secondary pull-right" id="button_quit">Quitter la conversation</button>
-                                `;
+        if (dataChannelList.length < 1) {
+            divHeader.innerHTML += `<div class="col-sm-8 col-xs-7 heading-name" id="userName">
+            <a class="heading-name-meta">${e.target.id}
+            </a>
+            <span>Online</span>
+        </div>
+        <button class="btn btn-secondary pull-right" id="button_quit">Quitter la conversation</button>
+        `;
+        }
+
         document.getElementById("logo_title").style.display = "none";
     }
     if (e.target && e.target.className == 'acceptButton') {
