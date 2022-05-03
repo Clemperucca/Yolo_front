@@ -1,5 +1,8 @@
+import { send_crypted_message, extract_from_JSON } from "./index.js";
+
 var socket = io();
 var userName = "patoche " + Math.random();
+let msg;
 
 socket.emit("request", msg = { type: "login", name: userName });
 
@@ -25,7 +28,7 @@ var pcCaller;
 var pcCallee;
 var dataChannel;
 var dataChannelList = new Array();
-
+var password = "coucou";
 
 
 //put the name of the client in the front 
@@ -57,7 +60,8 @@ SendButton.addEventListener("click", e => {
 });
 
 
-function deleteMessages() {
+
+async function deleteMessages(convName) {
     //remove messages and hide the quit button 
     let messages = "";
     let divMsg = document.getElementById("messages");
@@ -72,7 +76,7 @@ function deleteMessages() {
         else if (divMessages[i].parentNode.className == "sender") {
             messages += "$£€/sender/";
         }
-        message = divMessages[i].textContent.trimStart().trimEnd();
+        let message = divMessages[i].textContent.trimStart().trimEnd();
         messages += message;
 
     }
@@ -83,6 +87,10 @@ function deleteMessages() {
     let divConvo = document.getElementById("conversation");
     divConvo.innerHTML += `<div id="messages"></div>`;
     document.getElementById("logo_title").style.display = "initial";
+    //displayLoadedConversation(messages);
+    let JSONToSave = await send_crypted_message(messages, password, convName, userName);
+    let loadedMessages = await extract_from_JSON(JSONToSave, password);
+    displayLoadedConversation(loadedMessages);
     return messages;
 }
 
@@ -91,11 +99,36 @@ function displayLoadedConversation(messages) {
     messagesToDisplay.forEach(message => {
         if (message.slice(0, 8) == "/receiv/") {
             //Afficher le message.slice(8) avec la classe receiver
-            console.log(message.slice(8));
+            let divMsg = document.getElementById("messages");
+            divMsg.innerHTML += `
+            <div class="row message-body">
+                <div class="col-sm-12 message-main-receiver">
+                    <div class="receiver">
+                        <div class="message-text">
+                                ${message.slice(8)}
+                                </div>
+                        </div>
+                </div>
+            </div>
+            `;
+            //console.log(message.slice(8));
         }
         else if (message.slice(0, 8) == "/sender/") {
             //Afficher le message.slice(8) avec la classe sender
-            console.log(message.slice(8));
+            //PAS OUF LE COPIE COLLE 
+            let divMsg = document.getElementById("messages");
+            divMsg.innerHTML += `
+            <div class="row message-body">
+                <div class="col-sm-12 message-main-sender">
+                    <div class="sender">
+                        <div class="message-text">
+                        ${message.slice(8)}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+            //console.log(message.slice(8));
         }
     });
 }
@@ -267,13 +300,13 @@ function deleteUser(user) {
     let userToDelete = document.getElementById(user);
     userToDelete.parentNode.removeChild(userToDelete);
 };
-function whatchForClosing(dataChannel) {
+function whatchForClosing(dataChannel, convName) {
     dataChannel.addEventListener("close", ev => {
         console.log(dataChannel.readyState);
         let divName = document.getElementById("userName");
         divName.style.display = "none";
         putUserName();
-        deleteMessages();
+        deleteMessages(convName);
     });
 
 };
@@ -391,7 +424,7 @@ socket.on("answer", async receiverName => {
     });
 
 
-    whatchForClosing(dataChannel);
+    whatchForClosing(dataChannel, callee);
     closeDc(dataChannel);
 
 
@@ -509,7 +542,7 @@ socket.on("pcOffer", async (callerSdp, dc) => {
         sendMessage(dataChannel, "coucou bro", userName);
         messageReceive(dataChannel);
         //functions for closing the dc
-        whatchForClosing(dataChannel);
+        whatchForClosing(dataChannel, caller);
         closeDc(dataChannel);
 
 

@@ -21,6 +21,7 @@ app.get('/', (req, res) => {
 app.use('/css', express.static(__dirname + '/css'));
 app.use('/js', express.static(__dirname + '/js'));
 app.use('/img', express.static(__dirname + '/img'));
+app.use('/pkg', express.static(__dirname + '/pkg'));
 
 
 
