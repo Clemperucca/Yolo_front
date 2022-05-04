@@ -32,7 +32,6 @@ var dataChannel;
 var dataChannelList = new Array();
 var password = "coucou";
 
-
 //put the name of the client in the front 
 let divHeader = document.getElementById("friendName");
 divHeader.innerHTML += `<div class="col-sm-8 col-xs-7 heading-name" id = "yourName">
@@ -390,26 +389,7 @@ async function addThisFriend(id, full_name) {
     await delay(300)
     window.location.reload();
 };
-function search() {
-    const val = document.querySelector('input').value;
-    console.log(val);
-    let xhr = new XMLHttpRequest();
-    xhr.open("GET", url + `/get_users/` + val, false);
-    xhr.onload = () => {
-        if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-                console.log(xhr.statusText);
-                parseData(xhr.responseText);
-            } else {
-                console.error(xhr.statusText);
-            }
-        }
-    };
-    xhr.onerror = () => {
-        console.error(xhr.statusText);
-    };
-    xhr.send(null);
-};
+//search_friend place
 //fonctions menu
 function openNav() {
     document.getElementById("sideNavigation").style.width = "180px";

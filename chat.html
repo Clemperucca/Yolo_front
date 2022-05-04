@@ -9,6 +9,14 @@
   <script src="/socket.io/socket.io.js"></script>
 
   <!-- Font Awesome File -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oleo+Script&family=Overpass:wght@100&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet"
+    href="https://fonts.sandbox.google.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    / <link rel="stylesheet"
+    href="https://fonts.sandbox.google.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -44,7 +52,15 @@
         <div class="side-one">
           <!-- Heading -->
           <div class="row heading" id="headingLeft">
-            <h4 class="text-center">Mes amis</h4>
+            <span class="material-symbols-outlined">
+              person_add
+            </span>
+            <span class="material-symbols-outlined">
+              logout
+            </span>
+            <span class="material-symbols-outlined">
+              folder_open
+            </span>
           </div>
 
           <!-- Heading End -->
@@ -181,5 +197,30 @@
 
 </body>
 <script type="module" src="js/yolo_web_rtc.js"> </script>
+<script>
+
+
+  function search_friend() {
+    console.log("dans search");
+    const val = document.querySelector('input').value;
+    console.log(val);
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", url + `/get_users/` + val, false);
+    xhr.onload = () => {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          console.log(xhr.statusText);
+          parseData(xhr.responseText);
+        } else {
+          console.error(xhr.statusText);
+        }
+      }
+    };
+    xhr.onerror = () => {
+      console.error(xhr.statusText);
+    };
+    xhr.send(null);
+  };
+</script>
 
 </html>

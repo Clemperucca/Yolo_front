@@ -11,10 +11,12 @@ span {
 }
 
 body {
-  background-color: rgba(3, 72, 85, 1);
+  background-color: rgba(51, 107, 129, 1);
   background-size: cover;
   margin-bottom: auto;
   background-image: url(img/backMontagne.jpg);
+  font-family: 'Oleo Script',
+    cursive;
 }
 
 
@@ -118,10 +120,7 @@ body {
   height: 26%;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
     0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  font-family: Georgia,
-    'Times New Roman',
-    Times,
-    serif;
+  font-family: 'Oleo Script', cursive;
   font-style: normal;
   color: black;
   font-weight: 400;
@@ -174,7 +173,8 @@ body {
   cursor: pointer;
   display: block;
   position: relative;
-  font-family: Verdana, Arial, sans-serif;
+  font-family: 'Oleo Script',
+    cursive;
   font-style: normal;
   font-weight: 400;
   animation: pulse 1s cubic-bezier(0, 0, 0, 0) 0.3s infinite;
@@ -199,7 +199,8 @@ body {
   background-color: #D3D0CB;
 
   color: black;
-  font-family: Verdana, Arial, sans-serif;
+  font-family: 'Oleo Script',
+    cursive;
   font-style: normal;
   border: none;
   position: relative;
@@ -209,8 +210,8 @@ body {
 }
 
 .offerButton {
-  font-family: Verdana, Arial, sans-serif;
-  font-weight: 400;
+  font-family: 'Oleo Script',
+    cursive;
   font-style: normal;
   border: none;
   background-color: #D3D0CB;
@@ -284,7 +285,8 @@ body {
   width: 100%;
   background-color: #19768d;
   z-index: 1000;
-
+  display: flex;
+  text-align: center;
 }
 
 #friendName {
@@ -292,7 +294,7 @@ body {
   margin: 0 !important;
   height: 60px;
   width: 100%;
-  background-color: #028090;
+  background-color: rgb(51, 107, 129);
   z-index: 1000;
 }
 
@@ -326,6 +328,7 @@ body {
   white-space: nowrap;
   color: rgb(255, 255, 255);
   display: block;
+  font-family: 'Overpass', sans-serif;
 }
 
 .heading-online {
@@ -636,7 +639,7 @@ body {
 .reply {
   height: 60px;
   width: 100%;
-  background-color: #028090;
+  background-color: rgb(51, 107, 129);
   padding: 10px 5px 10px 5px !important;
   margin: 0 !important;
   z-index: 1000;
@@ -716,10 +719,8 @@ body {
   height: 75%;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
     0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  font-family: Georgia,
-    'Times New Roman',
-    Times,
-    serif;
+  font-family: 'Oleo Script',
+    cursive;
   font-style: normal;
   color: black;
   font-weight: 400;
