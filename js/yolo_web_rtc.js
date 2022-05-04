@@ -15,6 +15,7 @@ socket.emit("request", msg = { type: "login", name: userName });
 var firstName = ...
 var lastName = ...
 */
+
 var userList = new Array();
 var callee;
 var options = {
@@ -255,9 +256,8 @@ function displayDecline() {
 
 function displayOldConv() {
     let divModal = document.getElementById("modal");
-    //quand je met un id a old Conv ca casse tout donc pas de boutton pour linstant 
     divModal.innerHTML += `
-                        <div class="oldConv">
+                        <div class="oldConv" id="oldConvo">
                             <button type="button" class="element-head" aria-label="Close" id="button_quit_conv">
                             <span aria-hidden="true">&times;</span>
                             </button>
@@ -720,14 +720,10 @@ convButton.addEventListener("click", e => {
     displayOldConv();
     const quitConv = document.getElementById("button_quit_conv");
     quitConv.addEventListener("click", e => {
-        let conv = document.getElementById("oldConv");
+        let conv = document.getElementById("oldConvo");
         conv.parentNode.removeChild(conv);
     });
 });
-
-
-
-
 
 
 //closing the app
