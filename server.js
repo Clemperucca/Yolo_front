@@ -120,8 +120,18 @@ io.on('connection', (socket) => {
           //send the answer to the recipient 
           io.to(recipientSocketId).emit("decline", senderName);
 
-        }
+        };
         break;
+      case "quitWaiting":
+        recipientSocketId = lookForUserSocketId(msg.name);
+        console.log("quit wait :" + msg.name);
+        senderName = lookForUserName(socket.id);
+        if (recipientSocketId != null) {
+          //send the answer to the recipient 
+          io.to(recipientSocketId).emit("quitWaiting", senderName);
+        };
+        break;
+
       case "sdpCaller":
         console.log("envoie sdp:" + msg.name);
         //Get the recipient socketId

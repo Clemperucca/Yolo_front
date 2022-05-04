@@ -573,7 +573,15 @@ socket.on("offer", senderName => {
     displayOffer(senderName);
 
 });
-
+socket.on("quitWaiting", e => {
+    let offer = document.getElementById("offer");
+    offer.parentNode.removeChild(offer);
+    let button_quit = document.getElementById("button_quit");
+    button_quit.parentNode.removeChild(button_quit);
+    let div = document.getElementById("userName");
+    div.parentNode.removeChild(div);
+    putUserName();
+});
 
 //receiving a peerConnection offer from the caller (send by the signaling server)
 socket.on("pcOffer", async (callerSdp, dc) => {
@@ -657,12 +665,12 @@ document.addEventListener('click', function (e) {
         //display pop up
         displayWaiting();
         const quitwaiting = document.getElementById("button_quit_waiting");
-        quitwaiting.addEventListener("click", e => {
+        quitwaiting.addEventListener("click", event => {
             document.getElementById("offer2").parentNode.removeChild(document.getElementById("offer2"));
             document.getElementById("logo_title").style.display = "initial";
             let button_quit = document.getElementById("button_quit");
             button_quit.parentNode.removeChild(button_quit);
-
+            socket.emit("request", { type: 'quitWaiting', name: e.target.id });
         });
 
         let divHeader = document.getElementById("friendName");
