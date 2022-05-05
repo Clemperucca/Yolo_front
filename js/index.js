@@ -48,7 +48,7 @@ export async function send_crypted_message(message, password, conversationName, 
     let cipher = crypt_aes_gcm_siv(message);
     let key = cipher.get_key();
     let crypted_key = crypt_aes_key(key, password);
-    let JSON = {
+    let jsonToSend = {
         "username": username,//username
         "messages": cipher.get_text(),
         "key": crypted_key,
@@ -62,8 +62,9 @@ export async function send_crypted_message(message, password, conversationName, 
     xhr.open("POST", "url");
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.send(JSON);*/
-    console.log(JSON);
-    return JSON;
+    // jsonToSend = JSON.stringify(jsonToSend);
+    console.log(jsonToSend);
+    return jsonToSend;
 };
 
 export function extract_from_JSON(JSON, password) {
