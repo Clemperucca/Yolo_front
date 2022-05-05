@@ -15,7 +15,18 @@ socket.emit("request", msg = { type: "login", name: userName });
 var firstName = ...
 var lastName = ...
 */
-
+/*
+var loadedConversations = {
+    conv1:
+        { "username": "patoche 0.13311599133578045", "messages": { "0": 88, "1": 252, "2": 228, "3": 172, "4": 138, "5": 97, "6": 75, "7": 167, "8": 5, "40": 95, "41": 19, "42": 114, "43": 93, "44": 241, "45": 212, "46": 110, "47": 231, "48": 8, "49": 50, "50": 83, "51": 169, "52": 169, "53": 158, "54": 137, "55": 201, "56": 163, "57": 203, "58": 205, "59": 249, "60": 148, "61": 139, "62": 108, "63": 115, "64": 252, "65": 255, "66": 223, "67": 184, "68": 53, "69": 66, "70": 59 }, "key": { "0": 40, "1": 245, "2": 61, "3": 20, "4": 135, "5": 198, "6": 60, "7": 152, "8": 29, "9": 136, "10": 253, "11": 142, "12": 171, "13": 76, "14": 116, "15": 175, "16": 111, "17": 103, "18": 64, "19": 193, "20": 141, "21": 150, "22": 17, "23": 157, "24": 61, "25": 5, "26": 249, "27": 11, "28": 70, "29": 125, "30": 243, "31": 135, "32": 62, "33": 192, "34": 13, "35": 57, "36": 201, "37": 77, "38": 0, "39": 39, "40": 30, "41": 57, "42": 60, "43": 46, "44": 203, "45": 113, "46": 74, "47": 128 }, "nonce": "rsnt7fO0hiLB", "conversationName": "patoche 0.2519065011979116", "date": "03/05/2022" },
+    conv2:
+        { "username": "patoche 0.13311599133578045", "messages": { "0": 88, "1": 252, "2": 228, "3": 172, "4": 138, "5": 97, "6": 75, "7": 167, "8": 5 }, "key": { "0": 40, "1": 245, "2": 61, "3": 20, "4": 135, "5": 198, "6": 60, "7": 152, "8": 29, "9": 136, "10": 253, "11": 142, "12": 171, "13": 76, "14": 116, "15": 175, "16": 111, "17": 103, "18": 64, "19": 193, "20": 141, "21": 150, "22": 17, "23": 157, "24": 61, "25": 5, "26": 249, "27": 11, "28": 70, "29": 125, "30": 243, "31": 135, "32": 62, "33": 192, "34": 13, "35": 57, "36": 201, "37": 77, "38": 0, "39": 39, "40": 30, "41": 57, "42": 60, "43": 46, "44": 203, "45": 113, "46": 74, "47": 128 }, "nonce": "rsnt7fO0hiLB", "conversationName": "patoche 0.2519065011979116", "date": "03/05/2022" }
+}
+loadedConversations = JSON.parse(loadedConversations);
+for (let i in loadedConversations) {
+    console.log(i);
+}
+*/
 var userList = new Array();
 var callee;
 var options = {
@@ -90,6 +101,38 @@ async function deleteMessages(convName) {
     document.getElementById("logo_title").style.display = "initial";
     //displayLoadedConversation(messages);
     let JSONToSave = await send_crypted_message(messages, password, convName, userName);
+    JSONToSave = JSON.stringify(JSONToSave);
+    console.log("stringify:");
+    console.log(JSONToSave);
+    JSONToSave = JSON.parse(JSONToSave);
+    console.log("parse:")
+    console.log(JSONToSave);
+
+    for (let i in JSONToSave) {
+        let arrayMessage = new Array;
+        //console.log(i);
+        let arrayKey = new Array;
+        if (i == "key") {
+            for (let j in JSONToSave[i]) {
+                arrayKey.push(JSONToSave[i][j]);
+            }
+            JSONToSave[i] = arrayKey;
+        }
+        if (i == "messages") {
+            for (let j in JSONToSave[i]) {
+                arrayMessage.push(JSONToSave[i][j]);
+            }
+            JSONToSave[i] = arrayMessage;
+            console.log(JSONToSave);
+        }
+        /* for (let j in JSONToSave[i].messages) {
+             arrayMessage.push(JSONToSave[i].messages[j])
+         }
+         JSONToSave[i].messages = arrayMessage;
+         console.log(JSONToSave[i].messages);
+         */
+    }
+
     let loadedMessages = await extract_from_JSON(JSONToSave, password);
     displayLoadedConversation(loadedMessages);
     return messages;
@@ -102,16 +145,16 @@ function displayLoadedConversation(messages) {
             //Afficher le message.slice(8) avec la classe receiver
             let divMsg = document.getElementById("messages");
             divMsg.innerHTML += `
-            <div class="row message-body">
-                <div class="col-sm-12 message-main-receiver">
-                    <div class="receiver">
-                        <div class="message-text">
-                                ${message.slice(8)}
-                                </div>
-                        </div>
-                </div>
-            </div>
-            `;
+             <div class="row message-body">
+                 <div class="col-sm-12 message-main-receiver">
+                     <div class="receiver">
+                         <div class="message-text">
+                                 ${message.slice(8)}
+                                 </div>
+                         </div>
+                 </div>
+             </div>
+             `;
             //console.log(message.slice(8));
         }
         else if (message.slice(0, 8) == "/sender/") {
@@ -119,16 +162,16 @@ function displayLoadedConversation(messages) {
             //PAS OUF LE COPIE COLLE 
             let divMsg = document.getElementById("messages");
             divMsg.innerHTML += `
-            <div class="row message-body">
-                <div class="col-sm-12 message-main-sender">
-                    <div class="sender">
-                        <div class="message-text">
-                        ${message.slice(8)}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            `;
+             <div class="row message-body">
+                 <div class="col-sm-12 message-main-sender">
+                     <div class="sender">
+                         <div class="message-text">
+                         ${message.slice(8)}
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             `;
             //console.log(message.slice(8));
         }
     });
@@ -143,16 +186,16 @@ function messageReceive(dataChannel) {
         console.log(event);
         let divMsg = document.getElementById("messages");
         divMsg.innerHTML += `
-        <div class="row message-body">
-            <div class="col-sm-12 message-main-receiver">
-                <div class="receiver">
-                    <div class="message-text">
-                            ${event.data}
-                            </div>
-                    </div>
-            </div>
-        </div>
-        `;
+         <div class="row message-body">
+             <div class="col-sm-12 message-main-receiver">
+                 <div class="receiver">
+                     <div class="message-text">
+                             ${event.data}
+                             </div>
+                     </div>
+             </div>
+         </div>
+         `;
         if (dataChannelList.length > 0) {
             for (let i = 0; i < dataChannelList.length; i++) {
                 if (dataChannelList[i] != dataChannel) {
@@ -166,16 +209,16 @@ function displayMessageToSend(dataChannel, message) {
     if (dataChannel.readyState == "open") {
         let divMsg = document.getElementById("messages");
         divMsg.innerHTML += `
-        <div class="row message-body">
-            <div class="col-sm-12 message-main-sender">
-                <div class="sender">
-                    <div class="message-text">
-                    ${message}
-                    </div>
-                </div>
-            </div>
-        </div>
-        `;
+         <div class="row message-body">
+             <div class="col-sm-12 message-main-sender">
+                 <div class="sender">
+                     <div class="message-text">
+                     ${message}
+                     </div>
+                 </div>
+             </div>
+         </div>
+         `;
     }
 }
 function sendMessage(dataChannel, message, senderName) {
@@ -187,16 +230,16 @@ function displayOffer(senderName) {
     console.log("Sender name :" + senderName);
     let divModal = document.getElementById("modal");
     divModal.innerHTML += `<div id="offer" class="modal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="total">
-                    <div class="modalContainer"> Hi ! Somebody want to connect &#x1F600; </div>
-                    <div class="namename">  ${senderName} </div>
-                </div>
-                <button class="acceptButton" id=${changeWhiteSpacesIntoUnderscore(senderName)}><img src="/img/telephone.png" >Accept</button>
-                <button class="declineButton" id=${changeWhiteSpacesIntoUnderscore(senderName)}><img src="/img/decline.png" >Decline</button>
-            </div >
-            `;
+         <div class="modal-dialog">
+             <div class="modal-content">
+                 <div class="total">
+                     <div class="modalContainer"> Hi ! Somebody want to connect &#x1F600; </div>
+                     <div class="namename">  ${senderName} </div>
+                 </div>
+                 <button class="acceptButton" id=${changeWhiteSpacesIntoUnderscore(senderName)}><img src="/img/telephone.png" >Accept</button>
+                 <button class="declineButton" id=${changeWhiteSpacesIntoUnderscore(senderName)}><img src="/img/decline.png" >Decline</button>
+             </div >
+             `;
 
 
     let divHeader = document.getElementById("friendName");
@@ -229,40 +272,40 @@ function searchFriend() {
 function displayWaiting(senderName) {
     let divModal = document.getElementById("modal");
     divModal.innerHTML += `<div id="offer2" class="modal" >
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <button type="button" class="element-head" aria-label="Close" id="button_quit_waiting">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <header class="modalContainer"> Waiting for answer...</header>
-                </div >
-                `;
+             <div class="modal-dialog">
+                 <div class="modal-content">
+                     <button type="button" class="element-head" aria-label="Close" id="button_quit_waiting">
+                         <span aria-hidden="true">&times;</span>
+                     </button>
+                     <header class="modalContainer"> Waiting for answer...</header>
+                 </div >
+                 `;
 
 
     let divHeader = document.getElementById("friendName");
     document.getElementById("yourName").style.display = "none";
     if (dataChannelList.length < 1) {
         divHeader.innerHTML += `<div class="col-sm-8 col-xs-7 heading-name" id="userName">
-            <a class="heading-name-meta">${senderName}
-            </a>
-            <span>Online</span>
-        </div>
-        <button class="btn btn-secondary pull-right" id="button_quit">Quitter la conversation</button>
-        `;
+             <a class="heading-name-meta">${senderName}
+             </a>
+             <span>Online</span>
+         </div>
+         <button class="btn btn-secondary pull-right" id="button_quit">Quitter la conversation</button>
+         `;
 
     };
 };
 function displayDecline() {
     let divModal = document.getElementById("modal");
     divModal.innerHTML += `<div id="offer1" class="modal">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <button type="button" class="element-head" aria-label="Close" id="button_quit_decline">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                            <header class="modalContainer"> Offer declined, maybe he doesn't like you ...</header>
-                        </div >
-                        `;
+                     <div class="modal-dialog">
+                         <div class="modal-content">
+                             <button type="button" class="element-head" aria-label="Close" id="button_quit_decline">
+                                 <span aria-hidden="true">&times;</span>
+                             </button>
+                             <header class="modalContainer"> Offer declined, maybe he doesn't like you ...</header>
+                         </div >
+                         `;
 };
 
 function displayOldConv() {
@@ -314,23 +357,23 @@ function addUsers(user) {
     //Add to the list of user on the UI 
     let contactList = document.getElementById("friends");
     contactList.innerHTML += `
-                        <div class="row sideBar-body" id="${user}">
-                            <div class="col-sm-3 col-xs-3 sideBar-avatar">
-                                <div class="avatar-icon">
-                                    <img src="img/man-2-512.png">
-                                </div>
-                            </div>
-                            <div class="col-sm-9 col-xs-9 sideBar-main">
-                                <div class="row">
-                                    <div class="col-sm-8 col-xs-8 sideBar-name">
-                                        <span class="name-meta">${user}
-                                        </span>
-                                        <button class="offerButton" id="${user}">Send an offer <img src="/img/offer.png"> </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        `;
+                         <div class="row sideBar-body" id="${user}">
+                             <div class="col-sm-3 col-xs-3 sideBar-avatar">
+                                 <div class="avatar-icon">
+                                     <img src="img/man-2-512.png">
+                                 </div>
+                             </div>
+                             <div class="col-sm-9 col-xs-9 sideBar-main">
+                                 <div class="row">
+                                     <div class="col-sm-8 col-xs-8 sideBar-name">
+                                         <span class="name-meta">${user}
+                                         </span>
+                                         <button class="offerButton" id="${user}">Send an offer <img src="/img/offer.png"> </button>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+                         `;
 
 
 };
