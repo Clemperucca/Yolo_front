@@ -228,7 +228,7 @@ function searchFriend() {
         </div>`
 };
 
-function displayWaiting() {
+function displayWaiting(senderName) {
     let divModal = document.getElementById("modal");
     divModal.innerHTML += `<div id="offer2" class="modal" >
             <div class="modal-dialog">
@@ -239,6 +239,20 @@ function displayWaiting() {
                     <header class="modalContainer"> Waiting for answer...</header>
                 </div >
                 `;
+
+
+    let divHeader = document.getElementById("friendName");
+    document.getElementById("yourName").style.display = "none";
+    if (dataChannelList.length < 1) {
+        divHeader.innerHTML += `<div class="col-sm-8 col-xs-7 heading-name" id="userName">
+            <a class="heading-name-meta">${senderName}
+            </a>
+            <span>Online</span>
+        </div>
+        <button class="btn btn-secondary pull-right" id="button_quit">Quitter la conversation</button>
+        `;
+
+    };
 };
 function displayDecline() {
     let divModal = document.getElementById("modal");
@@ -350,11 +364,11 @@ function whatchForClosing(dataChannel, convName) {
 
 function closeDc(dataChannel) {
     let quitButton = document.getElementById("button_quit");
-    console.log("A3ZSEDRYGYHUJOIKPDUGAYIZHUE O8ZHUOIHZIOHDIUSHUOIDHOQSIHD9UHQUIH");
     quitButton.addEventListener("click", e => {
         if (dataChannelList.length > 0) {
             for (let i = 0; i < dataChannelList.length; i++) {
                 dataChannelList[i].close();
+                dataChannelList.splice(i, 1);
             }
         }
         else {
@@ -643,7 +657,7 @@ document.addEventListener('click', function (e) {
         socket.emit("request", { type: "offer", name: e.target.id });
         console.log(e.target.id);
         //display pop up
-        displayWaiting();
+        displayWaiting(e.target.id);
         const quitwaiting = document.getElementById("button_quit_waiting");
         quitwaiting.addEventListener("click", event => {
             document.getElementById("offer2").parentNode.removeChild(document.getElementById("offer2"));
@@ -652,7 +666,7 @@ document.addEventListener('click', function (e) {
             button_quit.parentNode.removeChild(button_quit);
             socket.emit("request", { type: 'quitWaiting', name: e.target.id });
         });
-
+        /*
         let divHeader = document.getElementById("friendName");
         document.getElementById("yourName").style.display = "none";
         if (dataChannelList.length < 1) {
@@ -663,7 +677,7 @@ document.addEventListener('click', function (e) {
         </div>
         <button class="btn btn-secondary pull-right" id="button_quit">Quitter la conversation</button>
         `;
-        }
+        }*/
 
         document.getElementById("logo_title").style.display = "none";
     }
@@ -718,5 +732,6 @@ convButton.addEventListener("click", e => {
 window.addEventListener('beforeunload', e => {
     socket.emit("disconnect");
 });
+
 
 

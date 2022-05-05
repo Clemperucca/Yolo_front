@@ -287,6 +287,7 @@ body {
   z-index: 1000;
   display: flex;
   text-align: center;
+  font-size: large;
 }
 
 #friendName {
@@ -375,6 +376,13 @@ body {
   background-color: #D3D0CB;
 }
 
+
+
+.title_left {
+  margin: auto;
+  text-align: center;
+  font-size: 24px;
+}
 
 /*#searchBox-inner input {
   box-shadow: none;
