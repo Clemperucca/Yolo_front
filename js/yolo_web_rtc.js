@@ -43,6 +43,8 @@ var dataChannel;
 var dataChannelList = new Array();
 var password = "coucou";
 
+
+
 //put the name of the client in the front 
 let divHeader = document.getElementById("friendName");
 divHeader.innerHTML += `<div class="col-sm-8 col-xs-7 heading-name" id = "yourName">
@@ -101,13 +103,13 @@ async function deleteMessages(convName) {
     document.getElementById("logo_title").style.display = "initial";
     //displayLoadedConversation(messages);
     let JSONToSave = await send_crypted_message(messages, password, convName, userName);
-    JSONToSave = JSON.stringify(JSONToSave);
-    console.log("stringify:");
-    console.log(JSONToSave);
+    // JSONToSave = JSON.stringify(JSONToSave);
+    //console.log("stringify:");
+    //console.log(JSONToSave);
     JSONToSave = JSON.parse(JSONToSave);
-    console.log("parse:")
+    console.log("parse:");
     console.log(JSONToSave);
-
+    /*
     for (let i in JSONToSave) {
         let arrayMessage = new Array;
         //console.log(i);
@@ -131,7 +133,7 @@ async function deleteMessages(convName) {
          JSONToSave[i].messages = arrayMessage;
          console.log(JSONToSave[i].messages);
          */
-    }
+    //        }
 
     let loadedMessages = await extract_from_JSON(JSONToSave, password);
     displayLoadedConversation(loadedMessages);

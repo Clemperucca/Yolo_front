@@ -1,4 +1,4 @@
-import init, { hash, crypt_aes_gcm_siv, decrypt_aes_gcm_siv, crypt_aes_key, decrypt_aes_key, generateRandomString, new_CryptedMessage } from "../pkg/chris_math.js";
+import init, { hash, new_JSONToSend, crypt_aes_gcm_siv, decrypt_aes_gcm_siv, crypt_aes_key, decrypt_aes_key, generateRandomString, new_CryptedMessage } from "../pkg/chris_math.js";
 /*
 async function chiffre(mdp) {
     await init();
@@ -46,8 +46,11 @@ mdpDiv.addEventListener("change", function (event) {
 export async function send_crypted_message(message, password, conversationName, username) {
     await init();
     let cipher = crypt_aes_gcm_siv(message);
+    //console.log(cipher);
+
     let key = cipher.get_key();
     let crypted_key = crypt_aes_key(key, password);
+    /*
     let jsonToSend = {
         "username": username,//username
         "messages": cipher.get_text(),
@@ -56,7 +59,8 @@ export async function send_crypted_message(message, password, conversationName, 
         "conversationName": conversationName,
         "date": new Date().toLocaleDateString()
 
-    };
+    };*/
+    let jsonToSend = new_JSONToSend(username, cipher.get_text(), crypted_key, cipher.get_nonce(), conversationName, new Date().toLocaleDateString())
     /*
     const xhr = new XMLHttpRequest();
     xhr.open("POST", "url");
