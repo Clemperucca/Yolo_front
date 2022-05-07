@@ -772,9 +772,10 @@ convButton.addEventListener("click", e => {
 
 
 //closing the app
-window.addEventListener('beforeunload', e => {
-    socket.emit("disconnect");
+/*
+window.addEventListener('unload', e => {
+    socket.emit("deconnect");
 });
-
+*/
 
 
