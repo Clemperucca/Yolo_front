@@ -185,15 +185,17 @@ function messageReceive(dataChannel) {
         console.log("Message received : " + event.data);
         console.log(event);
         let divMsg = document.getElementById("messages");
+        let message = DOMPurify.sanitize(event.data);
         divMsg.innerHTML += `
          <div class="row message-body">
              <div class="col-sm-12 message-main-receiver">
                  <div class="receiver">
                      <div class="message-text">
-                             ${event.data}
+                             ${message}
                              </div>
                      </div>
              </div>
+
          </div>
          `;
         if (dataChannelList.length > 0) {
@@ -207,13 +209,14 @@ function messageReceive(dataChannel) {
 }
 function displayMessageToSend(dataChannel, message) {
     if (dataChannel.readyState == "open") {
+        let messagePure = DOMPurify.sanitize(message);
         let divMsg = document.getElementById("messages");
         divMsg.innerHTML += `
          <div class="row message-body">
              <div class="col-sm-12 message-main-sender">
                  <div class="sender">
                      <div class="message-text">
-                     ${message}
+                     ${messagePure}
                      </div>
                  </div>
              </div>
@@ -262,24 +265,31 @@ function searchFriend() {
                 <span aria-hidden="true">&times;</span>
             </button>
             <input id="searchbar" onkeyup="search_friend()" type="text" name="search" placeholder="Search a friend..">
-            <div id = "result_search_friends"> </br> john Doe <button>ajouter best friend </button>
-            </br> Johnette Doe <button>ajouter best friend </button> </br>
-            </div>
-          </div>
-        </div>`
+                <div id="result_search_friends">
+                    <ul>
+                        <li>John Doe <button>ADD</button></li>
+                        <li>Johnette Doe <button>ADD</button></li>
+                        <li>John Doe <button>ADD</button></li>
+                        <li>Johnette Doe <button>ADD</button></li>
+                        <li>John Doe <button>ADD</button></li>
+                        <li>Johnette Doe <button>ADD</button></li>
+                    </ul>
+                </div>
+        </div>
+    </div>`
 };
 
 function displayWaiting(senderName) {
     let divModal = document.getElementById("modal");
-    divModal.innerHTML += `<div id="offer2" class="modal" >
-             <div class="modal-dialog">
-                 <div class="modal-content">
-                     <button type="button" class="element-head" aria-label="Close" id="button_quit_waiting">
-                         <span aria-hidden="true">&times;</span>
-                     </button>
-                     <header class="modalContainer"> Waiting for answer...</header>
-                 </div >
-                 `;
+    divModal.innerHTML += `<div id = "offer2" class="modal" >
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <button type="button" class="element-head" aria-label="Close" id="button_quit_waiting">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <header class="modalContainer"> Waiting for answer...</header>
+            </div >
+            `;
 
 
     let divHeader = document.getElementById("friendName");
@@ -298,33 +308,33 @@ function displayWaiting(senderName) {
 function displayDecline() {
     let divModal = document.getElementById("modal");
     divModal.innerHTML += `<div id="offer1" class="modal">
-                     <div class="modal-dialog">
-                         <div class="modal-content">
-                             <button type="button" class="element-head" aria-label="Close" id="button_quit_decline">
-                                 <span aria-hidden="true">&times;</span>
-                             </button>
-                             <header class="modalContainer"> Offer declined, maybe he doesn't like you ...</header>
-                         </div >
-                         `;
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <button type="button" class="element-head" aria-label="Close" id="button_quit_decline">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <header class="modalContainer"> Offer declined, maybe he doesn't like you ...</header>
+                    </div >
+                    `;
 };
 
 function displayOldConv() {
     let divModal = document.getElementById("modal");
     divModal.innerHTML += `
-                        <div class="oldConv" id="oldConvo">
-                            <button type="button" class="element-head" aria-label="Close" id="button_quit_conv">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                            <div class="col-sm-6 ">
-                                <div class="side-one">
-                                    <div class="row heading" id="headingLeft">
-                                        <h4 class="text-center">Mes conversations</h4>
-                                    </div>
-                                    <div class="row sideBar" id="conv">
-                                    </div>
+                    <div class="oldConv" id="oldConvo">
+                        <button type="button" class="element-head" aria-label="Close" id="button_quit_conv">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <div class="col-sm-6 ">
+                            <div class="side-one">
+                                <div class="row heading" id="headingLeft">
+                                    <h4 class="text-center">Mes conversations</h4>
+                                </div>
+                                <div class="row sideBar" id="conv">
                                 </div>
                             </div>
-                        </div>`
+                        </div>
+                    </div>`
 };
 
 function hideDecline() {
@@ -357,23 +367,23 @@ function addUsers(user) {
     //Add to the list of user on the UI 
     let contactList = document.getElementById("friends");
     contactList.innerHTML += `
-                         <div class="row sideBar-body" id="${user}">
-                             <div class="col-sm-3 col-xs-3 sideBar-avatar">
-                                 <div class="avatar-icon">
-                                     <img src="img/man-2-512.png">
-                                 </div>
-                             </div>
-                             <div class="col-sm-9 col-xs-9 sideBar-main">
-                                 <div class="row">
-                                     <div class="col-sm-8 col-xs-8 sideBar-name">
-                                         <span class="name-meta">${user}
-                                         </span>
-                                         <button class="offerButton" id="${user}">Send an offer <img src="/img/offer.png"> </button>
-                                     </div>
-                                 </div>
-                             </div>
-                         </div>
-                         `;
+                    <div class="row sideBar-body" id="${user}">
+                        <div class="col-sm-3 col-xs-3 sideBar-avatar">
+                            <div class="avatar-icon">
+                                <img src="img/man-2-512.png">
+                            </div>
+                        </div>
+                        <div class="col-sm-9 col-xs-9 sideBar-main">
+                            <div class="row">
+                                <div class="col-sm-8 col-xs-8 sideBar-name">
+                                    <span class="name-meta">${user}
+                                    </span>
+                                    <button class="offerButton" id="${user}">Send an offer <img src="/img/offer.png"> </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    `;
 
 
 };
