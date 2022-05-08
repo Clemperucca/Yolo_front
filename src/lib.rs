@@ -20,6 +20,10 @@ use pbkdf2::{
     password_hash::{PasswordHasher},
     Pbkdf2
 };
+
+use serde::{Serialize,Deserialize};
+
+use serde_json::*;
 //use rand_core::{OsRng, block};
 
 
@@ -51,11 +55,36 @@ pub fn hash(mut password:String)->String{
 }
 
 #[wasm_bindgen]
+#[derive(Serialize,Deserialize,Debug)]
 pub struct CryptedMessage{
     cipherText: Vec<u8>,
     key: String,
     nonce:String, 
 }
+#[wasm_bindgen]
+#[derive(Serialize,Deserialize,Debug)]
+pub struct JSONToSend{
+    username:String,
+    messages: Vec<u8>,
+    key: Vec<u8>,
+    nonce:String, 
+    conversationName:String,
+    date:String
+}
+
+#[wasm_bindgen]
+pub fn new_JSONToSend(username:String,cipherText: Vec<u8>,key: Vec<u8>,nonce:String,conversationName:String,date:String)->String{
+    let new_json=JSONToSend{
+        username:username,
+        messages:cipherText,
+        key:key,
+        nonce:nonce,
+        conversationName:conversationName,
+        date:date,
+    };
+    return serde_json::to_string(&new_json).unwrap();
+}
+
 #[wasm_bindgen]
 pub fn new_CryptedMessage(cipherText: Vec<u8>,key: String,nonce:String)->CryptedMessage{
     let crypted_message= CryptedMessage{
@@ -124,7 +153,7 @@ pub fn crypt_aes_gcm_siv(message:String)->CryptedMessage{
         key:rand_key.to_string(),
         nonce: rand_string,
     } ;
-    
+    //serde_json::to_string(&crypted_message).unwrap()
     return crypted_message;
 }
 #[wasm_bindgen]
