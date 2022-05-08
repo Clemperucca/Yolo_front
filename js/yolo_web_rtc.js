@@ -187,7 +187,7 @@ function messageReceive(dataChannel) {
         console.log("Message received : " + event.data);
         console.log(event);
         let divMsg = document.getElementById("messages");
-        let message = DOMPurify.sanitize(event.data);
+        let message = escapeHtml(event.data);
         divMsg.innerHTML += `
          <div class="row message-body">
              <div class="col-sm-12 message-main-receiver">
@@ -211,7 +211,7 @@ function messageReceive(dataChannel) {
 }
 function displayMessageToSend(dataChannel, message) {
     if (dataChannel.readyState == "open") {
-        let messagePure = DOMPurify.sanitize(message);
+        let messagePure = escapeHtml(message);
         let divMsg = document.getElementById("messages");
         divMsg.innerHTML += `
          <div class="row message-body">
@@ -231,6 +231,25 @@ function sendMessage(dataChannel, message, senderName) {
         dataChannel.send(senderName + " : " + message);
     }
 };
+
+
+
+var entityMap = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+    '/': '&#x2F;',
+    '`': '&#x60;',
+    '=': '&#x3D;'
+};
+
+function escapeHtml(string) {
+    return String(string).replace(/[&<>"'`=\/]/g, function (s) {
+        return entityMap[s];
+    });
+}
 function displayOffer(senderName) {
     console.log("Sender name :" + senderName);
     let divModal = document.getElementById("modal");
