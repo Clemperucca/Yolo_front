@@ -288,6 +288,42 @@ body {
   display: flex;
   text-align: center;
   font-size: large;
+  cursor: pointer;
+}
+
+
+
+#buttonAdd {
+  border-radius: 20%;
+
+}
+
+#buttonAdd:hover {
+  background-color: #4aacca;
+}
+
+#buttonConv {
+  border-radius: 20%;
+}
+
+#buttonConv:hover {
+  background-color: #4aacca;
+}
+
+#buttonLogOut {
+  border-radius: 20%;
+}
+
+#buttonLogOut:hover {
+  background-color: #4aacca;
+}
+
+#button {
+  border-radius: 20%;
+}
+
+#button:hover {
+  background-color: #4aacca;
 }
 
 #friendName {
