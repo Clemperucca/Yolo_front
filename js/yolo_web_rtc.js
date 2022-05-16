@@ -42,7 +42,7 @@ var pcCallee;
 var dataChannel;
 var dataChannelList = new Array();
 var password = "coucou";
-
+var JSONList;
 
 
 //put the name of the client in the front 
@@ -769,6 +769,9 @@ document.addEventListener('click', function (e) {
 
 
     };
+    if (e.target && e.target.className == "loadButton") {
+
+    }
 
 });
 
@@ -781,6 +784,28 @@ searchButton.addEventListener("click", e => {
     });
 });
 
+function addConv(convName) {
+    const divOldConv = document.getElementById("oldConvo");
+    divOldConv += `
+    <div class="row sideBar-body" id="${convName}">
+        <div class="col-sm-3 col-xs-3 sideBar-avatar">
+            <div class="avatar-icon">
+                <img src="img/man-2-512.png">
+            </div>
+        </div>
+        <div class="col-sm-9 col-xs-9 sideBar-main">
+            <div class="row">
+                <div class="col-sm-8 col-xs-8 sideBar-name">
+                    <span class="name-meta">${convName}
+                    </span>
+                    <button class="loadButton" id="${convName}">Load <img src="/img/offer.png"> </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    `;
+}
+
 convButton.addEventListener("click", e => {
     displayOldConv();
     const quitConv = document.getElementById("button_quit_conv");
@@ -788,6 +813,13 @@ convButton.addEventListener("click", e => {
         let conv = document.getElementById("oldConvo");
         conv.parentNode.removeChild(conv);
     });
+    for (let i in JSONList) {
+        for (let j in i) {
+
+        }
+
+    }
+
 });
 
 
